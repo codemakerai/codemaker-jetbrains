@@ -1,0 +1,67 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>ai.codemaker.jetbrains</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>CodeMaker AI</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="support@codemaker.ai" url="https://codemaker.ai">CodeMaker AI Inc.</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description><![CDATA[
+        <p>CodeMaker AI offers tools and automation for writing, testing and documenting source code.</p>
+
+        <h3>Features</h3>
+        <p>Fallowing operations are supported:</p>
+        <uL>
+            <li>Generating source code documentation.</li>
+        </ul>
+
+        <h3>Supported languages</h3>
+        <p>Following programming languages are supported:</p>
+        <uL>
+            <li>Java</li>
+        </ul>
+
+        <h3>Getting started</h3>
+        <ol>
+            <li>Sign up for the Early Access Program at https://codemaker.ai.</li>
+            <li>Receive the Early Access Program invitation email.</li>
+            <li>Install the plugin from Jetbrains Marketplace.</li>
+            <li>Configure the API Key in Preferences > Tools > CodeMaker AI.</li>
+            <li>Run the commands.</li>
+        </ol>
+  ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <actions>
+        <group id="ai.codemaker.jetbrains.ContextMenu" text="CodeMaker AI" description="CodeMaker" popup="true">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="before"
+                          relative-to-action="ProjectViewPopupMenuRefactoringGroup"/>
+        </group>
+
+        <group id="ai.codemaker.jetbrains.GenerateMenu" text="Generate" description="Generate" popup="true">
+            <add-to-group group-id="ai.codemaker.jetbrains.ContextMenu" anchor="last"/>
+            <action id="ai.codemaker.jetbrains.GenerateDocumentationAction"
+                    class="ai.codemaker.jetbrains.action.GenerateDocumentationAction" text="Documentation"
+                    description="Generates documentation"/>
+        </group>
+    </actions>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable parentId="tools" instance="ai.codemaker.jetbrains.settings.AppSettingsConfigurable"
+                                 id="ai.codemaker.jetbrains.settings.CodeMakerSettings"
+                                 displayName="CodeMaker AI"/>
+        <applicationService serviceImplementation="ai.codemaker.jetbrains.settings.AppSettingsState"/>
+    </extensions>
+</idea-plugin>
