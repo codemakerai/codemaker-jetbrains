@@ -30,7 +30,7 @@
 
         <h3>Getting started</h3>
         <ol>
-            <li>Sign up for the Early Access Program at https://codemaker.ai.</li>
+            <li>Sign up for the Early Access Program at <a href="https://codemaker.ai">https://codemaker.ai</a>.</li>
             <li>Receive the Early Access Program invitation email.</li>
             <li>Install the plugin from Jetbrains Marketplace.</li>
             <li>Configure the API Key in Preferences > Tools > CodeMaker AI.</li>
