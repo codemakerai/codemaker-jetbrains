@@ -27,6 +27,29 @@ class CodeMakerService(private val project: Project) {
 
     private val logger = Logger.getInstance(CodeMakerService::class.java)
 
+    fun generateCode(path: VirtualFile?) {
+        runInBackground("Generating code") {
+            try {
+                val client = createClient()
+                walkFiles(path) { file: VirtualFile ->
+                    if (file.isDirectory) {
+                        return@walkFiles true
+                    }
+
+                    try {
+                        processFile(client, file, Mode.CODE)
+                        return@walkFiles true
+                    } catch (e: Exception) {
+                        logger.error("Failed to generate code in file.", e)
+                        return@walkFiles false
+                    }
+                }
+            } catch (e: Exception) {
+                logger.error("Failed to generate code in file.", e)
+            }
+        }
+    }
+
     fun generateDocumentation(path: VirtualFile?) {
         runInBackground("Generating documentation") {
             try {
@@ -37,10 +60,7 @@ class CodeMakerService(private val project: Project) {
                     }
 
                     try {
-                        val language = FileExtensions.languageFromExtension(file.extension)
-                        val source = String(file.contentsToByteArray(), file.charset)
-                        val output = process(client, Mode.DOCUMENT, language!!, source)
-                        writeToFile(file, output)
+                        processFile(client, file, Mode.DOCUMENT)
                         return@walkFiles true
                     } catch (e: Exception) {
                         logger.error("Failed to generate documentation in file.", e)
@@ -100,6 +120,13 @@ class CodeMakerService(private val project: Project) {
 
     private fun filterFile(file: VirtualFile): Boolean {
         return file.isDirectory || FileExtensions.isSupported(file.extension)
+    }
+
+    private fun processFile(client: Client, file: VirtualFile, mode: Mode) {
+        val language = FileExtensions.languageFromExtension(file.extension)
+        val source = String(file.contentsToByteArray(), file.charset)
+        val output = process(client, mode, language!!, source)
+        writeToFile(file, output)
     }
 
     private fun writeToFile(file: VirtualFile, output: String) {

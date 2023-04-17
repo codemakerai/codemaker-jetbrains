@@ -19,6 +19,7 @@
         <h3>Features</h3>
         <p>Fallowing operations are supported:</p>
         <uL>
+            <li>Context-aware source code generation.</li>
             <li>Generating source code documentation.</li>
         </ul>
 
@@ -50,6 +51,9 @@
 
         <group id="ai.codemaker.jetbrains.GenerateMenu" text="Generate" description="Generate" popup="true">
             <add-to-group group-id="ai.codemaker.jetbrains.ContextMenu" anchor="last"/>
+            <action id="ai.codemaker.jetbrains.GenerateCodeAction"
+                    class="ai.codemaker.jetbrains.action.GenerateCodeAction" text="Code"
+                    description="Generates code"/>
             <action id="ai.codemaker.jetbrains.GenerateDocumentationAction"
                     class="ai.codemaker.jetbrains.action.GenerateDocumentationAction" text="Documentation"
                     description="Generates documentation"/>
