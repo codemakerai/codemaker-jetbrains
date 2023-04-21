@@ -88,11 +88,11 @@ class CodeMakerService(private val project: Project) {
 
     @Throws(InterruptedException::class)
     private fun process(client: Client, mode: Mode, language: Language, source: String): String {
-        val processResponse = client.CreateProcess(createProcessRequest(mode, language, source))
+        val processResponse = client.createProcess(createProcessRequest(mode, language, source))
         var success = false
         val timeout = Instant.now().plus(10, ChronoUnit.MINUTES)
         while (timeout.isAfter(Instant.now())) {
-            val processStatus = client.GetProcessStatus(
+            val processStatus = client.getProcessStatus(
                     createProcessStatusRequest(processResponse.id)
             )
             if (isCompleted(processStatus.status)) {
@@ -104,7 +104,7 @@ class CodeMakerService(private val project: Project) {
         if (!success) {
             throw RuntimeException("Processing task had failed")
         }
-        val response = client.GetProcessOutput(
+        val response = client.getProcessOutput(
                 createProcessOutputRequest(processResponse.id)
         )
         return response.output.source

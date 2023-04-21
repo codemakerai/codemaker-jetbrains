@@ -12,9 +12,9 @@ import ai.codemaker.sdk.client.model.GetProcessStatusResponse;
 
 public interface Client {
 
-    CreateProcessResponse CreateProcess(CreateProcessRequest request);
+    CreateProcessResponse createProcess(CreateProcessRequest request);
 
-    GetProcessStatusResponse GetProcessStatus(GetProcessStatusRequest request);
+    GetProcessStatusResponse getProcessStatus(GetProcessStatusRequest request);
 
-    GetProcessOutputResponse GetProcessOutput(GetProcessOutputRequest request);
+    GetProcessOutputResponse getProcessOutput(GetProcessOutputRequest request);
 }

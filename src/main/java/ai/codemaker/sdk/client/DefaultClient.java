@@ -22,28 +22,36 @@ import java.io.IOException;
 
 public class DefaultClient implements Client {
 
-    private static final String API_ENDPOINT = "https://api.codemaker.ai";
-
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final String apiKey;
 
+    private final Config config;
+
     public DefaultClient(String apiKey) {
+        this(apiKey, Config.create());
+    }
+
+    public DefaultClient(String apiKey, Config config) {
+        checkNotNull(apiKey, "apiKey");
+        checkNotNull(config, "config");
+
         this.apiKey = apiKey;
+        this.config = config;
     }
 
     @Override
-    public CreateProcessResponse CreateProcess(CreateProcessRequest request) {
+    public CreateProcessResponse createProcess(CreateProcessRequest request) {
         return doRequest(request, "/process", CreateProcessResponse.class);
     }
 
     @Override
-    public GetProcessStatusResponse GetProcessStatus(GetProcessStatusRequest request) {
+    public GetProcessStatusResponse getProcessStatus(GetProcessStatusRequest request) {
         return doRequest(request, "/process/status", GetProcessStatusResponse.class);
     }
 
     @Override
-    public GetProcessOutputResponse GetProcessOutput(GetProcessOutputRequest request) {
+    public GetProcessOutputResponse getProcessOutput(GetProcessOutputRequest request) {
         return doRequest(request, "/process/output", GetProcessOutputResponse.class);
     }
 
@@ -77,11 +85,17 @@ public class DefaultClient implements Client {
         return MAPPER.readValue(src, responseType);
     }
 
-    private static String endpoint(String path) {
-        return String.format("%s%s", API_ENDPOINT, path);
+    private String endpoint(String path) {
+        return String.format("%s%s", config.getEndpoint(), path);
     }
 
     private static boolean isSuccess(int code) {
         return code >= 200 && code < 300;
+    }
+
+    private static void checkNotNull(Object value, String name) {
+        if (value == null) {
+            throw new IllegalArgumentException(String.format("Parameter %s can not be null.", name));
+        }
     }
 }

@@ -18,6 +18,15 @@ configurations.all {
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testImplementation("org.mock-server:mockserver-junit-jupiter:5.15.0")
+}
+
+tasks {
+    test {
+        useJUnitPlatform()
+    }
 }
 
 // Configure Gradle IntelliJ Plugin
