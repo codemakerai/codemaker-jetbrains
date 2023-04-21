@@ -8,6 +8,7 @@ Integrates CodeMaker Code Generation capabilities and directly offers them as ID
 
 Fallowing operations are supported:
 
+* Context-aware source code generation.
 * Generating source code documentation.
 
 ## Supported languages
