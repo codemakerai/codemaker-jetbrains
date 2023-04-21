@@ -11,9 +11,13 @@ repositories {
     mavenCentral()
 }
 
+configurations.all {
+    exclude(group = "org.slf4j")
+}
+
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2") { exclude(group = "org.slf4j") }
-    implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1") { exclude(group = "org.slf4j") }
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
 }
 
 // Configure Gradle IntelliJ Plugin
