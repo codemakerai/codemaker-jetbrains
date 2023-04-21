@@ -44,13 +44,19 @@
     <depends>com.intellij.modules.platform</depends>
 
     <actions>
-        <group id="ai.codemaker.jetbrains.ContextMenu" text="CodeMaker AI" description="CodeMaker" popup="true">
+        <group id="ai.codemaker.jetbrains.ProjectViewPopupMenu" text="CodeMaker AI" description="CodeMaker" popup="true">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="before"
                           relative-to-action="ProjectViewPopupMenuRefactoringGroup"/>
         </group>
 
+        <group id="ai.codemaker.jetbrains.EditorPopupMenu" text="CodeMaker AI" description="CodeMaker" popup="true">
+            <add-to-group group-id="EditorLangPopupMenu" anchor="after"
+                          relative-to-action="Generate"/>
+        </group>
+
         <group id="ai.codemaker.jetbrains.GenerateMenu" text="Generate" description="Generate" popup="true">
-            <add-to-group group-id="ai.codemaker.jetbrains.ContextMenu" anchor="last"/>
+            <add-to-group group-id="ai.codemaker.jetbrains.ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="ai.codemaker.jetbrains.EditorPopupMenu" anchor="last"/>
             <action id="ai.codemaker.jetbrains.GenerateCodeAction"
                     class="ai.codemaker.jetbrains.action.GenerateCodeAction" text="Code"
                     description="Generates code"/>
