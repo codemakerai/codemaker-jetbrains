@@ -60,7 +60,7 @@ public class DefaultClient implements Client {
             final byte[] body = serialize(request);
             final ClassicHttpRequest httpRequest = ClassicRequestBuilder.post(endpoint(path))
                     .addHeader("Accept", "application/json")
-                    .addHeader("User-Agent", "CodeMakerSdkJava/1.2.0")
+                    .addHeader("User-Agent", "CodeMakerSdkJava/1.3.0")
                     .addHeader("Authorization", String.format("Bearer %s", apiKey))
                     .setEntity(body, ContentType.APPLICATION_JSON)
                     .build();
