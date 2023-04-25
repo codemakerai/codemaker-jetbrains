@@ -104,10 +104,10 @@ class CodeMakerService(private val project: Project) {
         if (!success) {
             throw RuntimeException("Processing task had failed")
         }
-        val response = client.getProcessOutput(
+        val processOutput = client.getProcessOutput(
                 createProcessOutputRequest(processResponse.id)
         )
-        return response.output.source
+        return processOutput.output.source
     }
 
     private fun walkFiles(path: VirtualFile?, iterator: ContentIterator) {
