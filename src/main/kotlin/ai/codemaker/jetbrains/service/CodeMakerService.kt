@@ -8,6 +8,8 @@ import ai.codemaker.jetbrains.settings.AppSettingsState.Companion.instance
 import ai.codemaker.sdk.client.Client
 import ai.codemaker.sdk.client.DefaultClient
 import ai.codemaker.sdk.client.model.*
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
@@ -18,8 +20,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ContentIterator
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiManager
+import com.intellij.util.ThrowableRunnable
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.Callable
+import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
 
 @Service(Service.Level.PROJECT)
@@ -123,22 +130,35 @@ class CodeMakerService(private val project: Project) {
     }
 
     private fun processFile(client: Client, file: VirtualFile, mode: Mode) {
-        val language = FileExtensions.languageFromExtension(file.extension)
-        val source = String(file.contentsToByteArray(), file.charset)
-        val output = process(client, mode, language!!, source)
-        writeToFile(file, output)
-    }
+        try {
+            val task = ReadAction.nonBlocking(Callable {
+                val documentManager = PsiDocumentManager.getInstance(project)
+                val psiFile = PsiManager.getInstance(project).findFile(file) ?: return@Callable null
+                val document = documentManager.getDocument(psiFile) ?: return@Callable null
+                val source = document.text
 
-    private fun writeToFile(file: VirtualFile, output: String) {
-        WriteCommandAction.runWriteCommandAction(project) {
-            try {
-                val newTimestamp = Instant.now().epochSecond
-                file.setBinaryContent(
-                        output.toByteArray(file.charset), newTimestamp, newTimestamp, this@CodeMakerService
-                )
-            } catch (e: Exception) {
-                logger.error("Failed to write file.", e)
+                FutureTask<String> {
+                    val language = FileExtensions.languageFromExtension(file.extension)
+                    return@FutureTask process(client, mode, language!!, source)
+                }
+            }).executeSynchronously() ?: return
+
+            task.run()
+            val output = task.get() ?: return
+
+            ApplicationManager.getApplication().invokeAndWait {
+                WriteCommandAction.writeCommandAction(project)
+                        .run(ThrowableRunnable<java.lang.RuntimeException> {
+                            val documentManager = PsiDocumentManager.getInstance(project)
+                            val psiFile = PsiManager.getInstance(project).findFile(file) ?: return@ThrowableRunnable
+                            val document = documentManager.getDocument(psiFile) ?: return@ThrowableRunnable
+
+                            document.setText(output)
+                            documentManager.commitDocument(document)
+                        })
             }
+        } catch (e: Exception) {
+            logger.error("Failed to process file.", e)
         }
     }
 
