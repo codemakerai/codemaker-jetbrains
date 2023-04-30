@@ -26,7 +26,6 @@ import com.intellij.util.ThrowableRunnable
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.Callable
-import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
 
 @Service(Service.Level.PROJECT)
@@ -131,34 +130,37 @@ class CodeMakerService(private val project: Project) {
 
     private fun processFile(client: Client, file: VirtualFile, mode: Mode) {
         try {
-            val task = ReadAction.nonBlocking(Callable {
-                val documentManager = PsiDocumentManager.getInstance(project)
-                val psiFile = PsiManager.getInstance(project).findFile(file) ?: return@Callable null
-                val document = documentManager.getDocument(psiFile) ?: return@Callable null
-                val source = document.text
+            val source = readFile(file) ?: return
 
-                FutureTask<String> {
-                    val language = FileExtensions.languageFromExtension(file.extension)
-                    return@FutureTask process(client, mode, language!!, source)
-                }
-            }).executeSynchronously() ?: return
+            val language = FileExtensions.languageFromExtension(file.extension)
+            val output = process(client, mode, language!!, source)
 
-            task.run()
-            val output = task.get() ?: return
-
-            ApplicationManager.getApplication().invokeAndWait {
-                WriteCommandAction.writeCommandAction(project)
-                        .run(ThrowableRunnable<java.lang.RuntimeException> {
-                            val documentManager = PsiDocumentManager.getInstance(project)
-                            val psiFile = PsiManager.getInstance(project).findFile(file) ?: return@ThrowableRunnable
-                            val document = documentManager.getDocument(psiFile) ?: return@ThrowableRunnable
-
-                            document.setText(output)
-                            documentManager.commitDocument(document)
-                        })
-            }
+            writeFile(file, output)
         } catch (e: Exception) {
             logger.error("Failed to process file.", e)
+        }
+    }
+
+    private fun readFile(file: VirtualFile): String? {
+        return ReadAction.nonBlocking(Callable<String> {
+            val documentManager = PsiDocumentManager.getInstance(project)
+            val psiFile = PsiManager.getInstance(project).findFile(file) ?: return@Callable null
+            val document = documentManager.getDocument(psiFile) ?: return@Callable null
+            return@Callable document.text
+        }).executeSynchronously()
+    }
+
+    private fun writeFile(file: VirtualFile, output: String) {
+        ApplicationManager.getApplication().invokeAndWait {
+            WriteCommandAction.writeCommandAction(project)
+                    .run(ThrowableRunnable<java.lang.RuntimeException> {
+                        val documentManager = PsiDocumentManager.getInstance(project)
+                        val psiFile = PsiManager.getInstance(project).findFile(file) ?: return@ThrowableRunnable
+                        val document = documentManager.getDocument(psiFile) ?: return@ThrowableRunnable
+
+                        document.setText(output)
+                        documentManager.commitDocument(document)
+                    })
         }
     }
 
