@@ -95,21 +95,22 @@ class CodeMakerService(private val project: Project) {
     @Throws(InterruptedException::class)
     private fun process(client: Client, mode: Mode, language: Language, source: String): String {
         val processResponse = client.createProcess(createProcessRequest(mode, language, source))
-        var success = false
         val timeout = Instant.now().plus(10, ChronoUnit.MINUTES)
+
         while (timeout.isAfter(Instant.now())) {
-            val processStatus = client.getProcessStatus(
+            val status = client.getProcessStatus(
                     createProcessStatusRequest(processResponse.id)
             )
-            if (isCompleted(processStatus.status)) {
-                success = true
+
+            if (isCompleted(status)) {
                 break
+            } else if (isFailed(status)) {
+                throw RuntimeException("Processing task had failed")
             }
+
             TimeUnit.MILLISECONDS.sleep(1000)
         }
-        if (!success) {
-            throw RuntimeException("Processing task had failed")
-        }
+
         val processOutput = client.getProcessOutput(
                 createProcessOutputRequest(processResponse.id)
         )
@@ -169,8 +170,13 @@ class CodeMakerService(private val project: Project) {
         return DefaultClient(appSettings.apiKey)
     }
 
-    private fun isCompleted(status: Status): Boolean {
-        return status == Status.COMPLETED
+    private fun isCompleted(status: GetProcessStatusResponse): Boolean {
+        return status.status == Status.COMPLETED
+    }
+
+    private fun isFailed(status: GetProcessStatusResponse): Boolean {
+        return status.status == Status.FAILED
+                || status.status == Status.TIMED_OUT
     }
 
     private fun createProcessRequest(mode: Mode, language: Language, source: String): CreateProcessRequest {
