@@ -8,14 +8,17 @@ import ai.codemaker.sdk.client.model.Language
 class FileExtensions {
 
     companion object {
-        private val languageByExtension = hashMapOf("java" to Language.JAVA)
+        private val languageByExtension = hashMapOf(
+                "java" to Language.JAVA,
+                "js" to Language.JAVASCRIPT
+        )
 
         fun isSupported(extension: String?): Boolean {
             return languageByExtension.contains(extension)
         }
 
         fun languageFromExtension(extensions: String?): Language? {
-            return languageByExtension.get(extensions)
+            return languageByExtension[extensions]
         }
     }
 }
