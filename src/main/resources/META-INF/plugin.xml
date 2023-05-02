@@ -50,8 +50,8 @@
         </group>
 
         <group id="ai.codemaker.jetbrains.EditorPopupMenu" text="CodeMaker AI" description="CodeMaker" popup="true">
-            <add-to-group group-id="EditorLangPopupMenu" anchor="after"
-                          relative-to-action="Generate"/>
+            <add-to-group group-id="EditorLangPopupMenu" anchor="before"
+                          relative-to-action="RefactoringMenu"/>
         </group>
 
         <group id="ai.codemaker.jetbrains.GenerateMenu" text="Generate" description="Generate" popup="true">
