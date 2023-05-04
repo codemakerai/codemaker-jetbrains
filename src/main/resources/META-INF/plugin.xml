@@ -26,6 +26,7 @@
         <h3>Supported languages</h3>
         <p>Following programming languages are supported:</p>
         <uL>
+            <li>JavaScript</li>
             <li>Java</li>
         </ul>
 
