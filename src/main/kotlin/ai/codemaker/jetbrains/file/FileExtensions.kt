@@ -9,8 +9,9 @@ class FileExtensions {
 
     companion object {
         private val languageByExtension = hashMapOf(
+                "js" to Language.JAVASCRIPT,
                 "java" to Language.JAVA,
-                "js" to Language.JAVASCRIPT
+                "kt" to Language.KOTLIN,
         )
 
         fun isSupported(extension: String?): Boolean {
