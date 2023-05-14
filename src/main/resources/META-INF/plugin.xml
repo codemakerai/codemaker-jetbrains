@@ -62,12 +62,12 @@
             <action id="ai.codemaker.jetbrains.GenerateCodeAction"
                     class="ai.codemaker.jetbrains.action.GenerateCodeAction" text="Code"
                     description="Generates code">
-                <keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
+                <keyboard-shortcut keymap="$default" first-keystroke="alt ctrl G" second-keystroke="C"/>
             </action>
             <action id="ai.codemaker.jetbrains.GenerateDocumentationAction"
                     class="ai.codemaker.jetbrains.action.GenerateDocumentationAction" text="Documentation"
                     description="Generates documentation">
-                <keyboard-shortcut keymap="$default" first-keystroke="alt D"/>
+                <keyboard-shortcut keymap="$default" first-keystroke="alt ctrl G" second-keystroke="D"/>
             </action>
         </group>
     </actions>
