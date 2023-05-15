@@ -4,6 +4,7 @@
 package ai.codemaker.jetbrains.action
 
 import ai.codemaker.jetbrains.service.CodeMakerService
+import ai.codemaker.sdk.client.model.Modify
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -20,10 +21,10 @@ class GenerateCodeAction : AnAction() {
             val documentManager = PsiDocumentManager.getInstance(project)
             val file = documentManager.getPsiFile(editor.document) ?: return
             documentManager.commitDocument(editor.document)
-            service.generateCode(file.virtualFile)
+            service.generateCode(file.virtualFile, Modify.NONE)
         } else {
             val file = e.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
-            service.generateCode(file)
+            service.generateCode(file, Modify.NONE)
         }
     }
 }

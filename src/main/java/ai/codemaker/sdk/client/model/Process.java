@@ -10,10 +10,13 @@ public class Process {
 
     private final Input input;
 
-    public Process(Mode mode, Language language, Input input) {
+    private final Options options;
+
+    public Process(Mode mode, Language language, Input input, Options options) {
         this.mode = mode;
         this.language = language;
         this.input = input;
+        this.options = options;
     }
 
     public Mode getMode() {
@@ -26,5 +29,9 @@ public class Process {
 
     public Input getInput() {
         return input;
+    }
+
+    public Options getOptions() {
+        return options;
     }
 }

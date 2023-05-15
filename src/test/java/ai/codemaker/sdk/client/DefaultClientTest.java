@@ -13,6 +13,8 @@ import ai.codemaker.sdk.client.model.GetProcessStatusResponse;
 import ai.codemaker.sdk.client.model.Input;
 import ai.codemaker.sdk.client.model.Language;
 import ai.codemaker.sdk.client.model.Mode;
+import ai.codemaker.sdk.client.model.Modify;
+import ai.codemaker.sdk.client.model.Options;
 import ai.codemaker.sdk.client.model.Process;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +54,7 @@ public class DefaultClientTest {
 
         // given
         final CreateProcessRequest request = new CreateProcessRequest(
-                new Process(Mode.DOCUMENT, Language.JAVA, new Input(""))
+                new Process(Mode.DOCUMENT, Language.JAVA, new Input(""), new Options(Modify.NONE))
         );
 
         // when

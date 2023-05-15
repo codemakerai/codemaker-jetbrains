@@ -70,6 +70,20 @@
                 <keyboard-shortcut keymap="$default" first-keystroke="alt ctrl G" second-keystroke="D"/>
             </action>
         </group>
+
+        <group id="ai.codemaker.jetbrains.GenerateReplaceMenu" text="Replace" description="Generate" popup="true">
+            <add-to-group group-id="ai.codemaker.jetbrains.GenerateMenu" anchor="last"/>
+            <action id="ai.codemaker.jetbrains.ReplaceCodeAction"
+                    class="ai.codemaker.jetbrains.action.ReplaceCodeAction" text="Replace Code"
+                    description="Replaces code">
+                <keyboard-shortcut keymap="$default" first-keystroke="shift alt ctrl G" second-keystroke="C"/>
+            </action>
+            <action id="ai.codemaker.jetbrains.ReplaceDocumentationAction"
+                    class="ai.codemaker.jetbrains.action.ReplaceDocumentationAction" text="Replace Documentation"
+                    description="Replaces documentation">
+                <keyboard-shortcut keymap="$default" first-keystroke="shift alt ctrl G" second-keystroke="D"/>
+            </action>
+        </group>
     </actions>
 
     <!-- Extension points defined by the plugin.
