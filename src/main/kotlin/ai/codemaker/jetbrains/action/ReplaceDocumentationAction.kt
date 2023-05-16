@@ -10,21 +10,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.psi.PsiDocumentManager
 
-class ReplaceDocumentationAction : AnAction() {
-    override fun actionPerformed(e: AnActionEvent) {
-        val project = e.getData(CommonDataKeys.PROJECT) ?: return
+class ReplaceDocumentationAction : BaseDocumentationAction(Modify.REPLACE) {
 
-        val service: CodeMakerService = project.getService(CodeMakerService::class.java)
-
-        val editor = e.getData(CommonDataKeys.EDITOR)
-        if (editor != null) {
-            val documentManager = PsiDocumentManager.getInstance(project)
-            val file = documentManager.getPsiFile(editor.document) ?: return
-            documentManager.commitDocument(editor.document)
-            service.generateDocumentation(file.virtualFile, Modify.REPLACE)
-        } else {
-            val file = e.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
-            service.generateDocumentation(file, Modify.REPLACE)
-        }
-    }
 }
