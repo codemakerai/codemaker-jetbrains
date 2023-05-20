@@ -72,7 +72,8 @@
         </group>
 
         <group id="ai.codemaker.jetbrains.GenerateReplaceMenu" text="Replace" description="Generate" popup="true">
-            <add-to-group group-id="ai.codemaker.jetbrains.GenerateMenu" anchor="last"/>
+            <add-to-group group-id="ai.codemaker.jetbrains.ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="ai.codemaker.jetbrains.EditorPopupMenu" anchor="last"/>
             <action id="ai.codemaker.jetbrains.ReplaceCodeAction"
                     class="ai.codemaker.jetbrains.action.ReplaceCodeAction" text="Replace Code"
                     description="Replaces code">
