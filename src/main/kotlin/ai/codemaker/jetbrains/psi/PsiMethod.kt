@@ -11,14 +11,14 @@ import com.intellij.psi.util.parentOfType
 class PsiMethod(private val psiElement: PsiNameIdentifierOwner?) {
 
     companion object {
-        val types = setOf(
+        private val TYPES = setOf(
                 "com.intellij.psi.impl.source.PsiMethodImpl",
                 "org.jetbrains.kotlin.psi.KtNamedFunction",
                 "com.intellij.lang.javascript.psi.impl.JSFunctionImpl",
         )
 
         fun isMethod(element: PsiElement): Boolean {
-            return types.contains(element.javaClass.name)
+            return TYPES.contains(element.javaClass.name)
         }
     }
 

@@ -5,11 +5,17 @@
 package ai.codemaker.jetbrains.group
 
 import ai.codemaker.jetbrains.psi.PsiUtils
+import ai.codemaker.jetbrains.ui.UIUtils
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 
 class ReplaceMethodGroup : DefaultActionGroup() {
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
+    }
 
     override fun update(e: AnActionEvent) {
         val presentation = e.presentation
@@ -21,6 +27,6 @@ class ReplaceMethodGroup : DefaultActionGroup() {
         if (method == null) {
             return
         }
-        presentation.text = "Replace '${method.name}'"
+        presentation.text = "Replace '${UIUtils.displayName(method.name)}'"
     }
 }

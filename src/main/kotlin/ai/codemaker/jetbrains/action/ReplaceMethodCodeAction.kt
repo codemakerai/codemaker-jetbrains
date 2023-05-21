@@ -5,6 +5,7 @@
 package ai.codemaker.jetbrains.action
 
 import ai.codemaker.jetbrains.psi.PsiUtils
+import ai.codemaker.jetbrains.ui.UIUtils
 import ai.codemaker.sdk.client.model.Modify
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -27,7 +28,8 @@ class ReplaceMethodCodeAction : BaseCodeAction(Modify.REPLACE) {
         if (method == null) {
             return
         }
-        presentation.text = "Replace '${method.name}' code"
+
+        presentation.text = "Replace '${UIUtils.displayName(method.name)}' code"
     }
 
     override fun getCodePath(psiFile: PsiFile, offset: Int): String? {
