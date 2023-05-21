@@ -21,17 +21,17 @@ class ReplaceMethodCodeAction : BaseCodeAction(Modify.REPLACE) {
         val presentation = e.presentation
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return
         val psiFile = e.getData(CommonDataKeys.PSI_FILE) ?: return
-        val element = PsiUtils.getNamedElement(psiFile, editor.caretModel.offset)
+        val method = PsiUtils.getMethod(psiFile, editor.caretModel.offset)
 
-        presentation.isVisible = element != null
-        if (element == null) {
+        presentation.isVisible = method != null
+        if (method == null) {
             return
         }
-        presentation.text = "Replace '${element.name}' code"
+        presentation.text = "Replace '${method.name}' code"
     }
 
     override fun getCodePath(psiFile: PsiFile, offset: Int): String? {
-        val element = PsiUtils.getNamedElement(psiFile, offset) ?: return null
+        val element = PsiUtils.getMethod(psiFile, offset) ?: return null
         return element.codePath
     }
 }

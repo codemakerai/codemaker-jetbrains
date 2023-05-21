@@ -7,7 +7,18 @@ package ai.codemaker.jetbrains.psi
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.util.parentOfType
 
-class PsiNamedElement(private val psiElement: PsiNameIdentifierOwner?) {
+class PsiMethod(private val psiElement: PsiNameIdentifierOwner?) {
+
+    companion object {
+        val types = setOf(
+                "com.intellij.psi.impl.source.PsiMethodImpl",
+                "org.jetbrains.kotlin.psi.KtNamedFunction",
+        )
+
+        fun isMethod(typeName: String): Boolean {
+            return types.contains(typeName)
+        }
+    }
 
     val name: String?
         get() {

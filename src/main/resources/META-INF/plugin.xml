@@ -55,6 +55,11 @@
         <group id="ai.codemaker.jetbrains.EditorPopupMenu" text="CodeMaker AI" description="CodeMaker" popup="true">
             <add-to-group group-id="EditorLangPopupMenu" anchor="before"
                           relative-to-action="RefactoringMenu"/>
+        </group>
+
+        <group id="ai.codemaker.jetbrains.ReplaceMethod" class="ai.codemaker.jetbrains.group.ReplaceMethodGroup"
+               text="Replace Method" description="Replaces method" popup="true">
+            <add-to-group group-id="ai.codemaker.jetbrains.EditorPopupMenu" anchor="last"/>
             <action id="ai.codemaker.jetbrains.ReplaceMethodCodeAction"
                     class="ai.codemaker.jetbrains.action.ReplaceMethodCodeAction" text="Replace Method Code"
                     description="Replaces method code">

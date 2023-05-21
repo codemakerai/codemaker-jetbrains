@@ -2,20 +2,14 @@
  * Copyright 2023 CodeMaker AI Inc. All rights reserved.
  */
 
-package ai.codemaker.jetbrains.action
+package ai.codemaker.jetbrains.group
 
 import ai.codemaker.jetbrains.psi.PsiUtils
-import ai.codemaker.sdk.client.model.Modify
-import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.psi.PsiFile
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 
-class ReplaceMethodDocumentationAction : BaseDocumentationAction(Modify.REPLACE) {
-
-    override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.BGT
-    }
+class ReplaceMethodGroup : DefaultActionGroup() {
 
     override fun update(e: AnActionEvent) {
         val presentation = e.presentation
@@ -27,11 +21,6 @@ class ReplaceMethodDocumentationAction : BaseDocumentationAction(Modify.REPLACE)
         if (method == null) {
             return
         }
-        presentation.text = "Replace '${method.name}' docs"
-    }
-
-    override fun getCodePath(psiFile: PsiFile, offset: Int): String? {
-        val element = PsiUtils.getMethod(psiFile, offset) ?: return null
-        return element.codePath
+        presentation.text = "Replace '${method.name}'"
     }
 }
