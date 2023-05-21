@@ -14,7 +14,7 @@ class PsiUtils {
             val element = psiFile.findElementAt(offset)
             val namedElement = PsiTreeUtil.getParentOfType(element, PsiNameIdentifierOwner::class.java) ?: return null
 
-            if (!PsiMethod.isMethod(namedElement.javaClass.name)) {
+            if (!PsiMethod.isMethod(namedElement)) {
                 return null
             }
 

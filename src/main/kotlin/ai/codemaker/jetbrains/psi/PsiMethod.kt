@@ -4,6 +4,7 @@
 
 package ai.codemaker.jetbrains.psi
 
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.util.parentOfType
 
@@ -13,10 +14,11 @@ class PsiMethod(private val psiElement: PsiNameIdentifierOwner?) {
         val types = setOf(
                 "com.intellij.psi.impl.source.PsiMethodImpl",
                 "org.jetbrains.kotlin.psi.KtNamedFunction",
+                "com.intellij.lang.javascript.psi.impl.JSFunctionImpl",
         )
 
-        fun isMethod(typeName: String): Boolean {
-            return types.contains(typeName)
+        fun isMethod(element: PsiElement): Boolean {
+            return types.contains(element.javaClass.name)
         }
     }
 
