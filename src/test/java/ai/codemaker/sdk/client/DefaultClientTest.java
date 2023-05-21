@@ -54,7 +54,12 @@ public class DefaultClientTest {
 
         // given
         final CreateProcessRequest request = new CreateProcessRequest(
-                new Process(Mode.DOCUMENT, Language.JAVA, new Input(""), new Options(Modify.NONE))
+                new Process(
+                        Mode.DOCUMENT,
+                        Language.JAVA,
+                        new Input(""),
+                        new Options(Modify.NONE, "Test.method()")
+                )
         );
 
         // when

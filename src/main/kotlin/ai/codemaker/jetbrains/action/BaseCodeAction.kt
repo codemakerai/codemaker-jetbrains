@@ -10,6 +10,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiFile
 
 abstract class BaseCodeAction(private val modify: Modify) : AnAction() {
 
@@ -21,12 +22,17 @@ abstract class BaseCodeAction(private val modify: Modify) : AnAction() {
         val editor = e.getData(CommonDataKeys.EDITOR)
         if (editor != null) {
             val documentManager = PsiDocumentManager.getInstance(project)
-            val file = documentManager.getPsiFile(editor.document) ?: return
+            val psiFile = documentManager.getPsiFile(editor.document) ?: return
+            val codePath = getCodePath(psiFile, editor.caretModel.offset)
             documentManager.commitDocument(editor.document)
-            service.generateCode(file.virtualFile, modify)
+            service.generateCode(psiFile.virtualFile, modify, codePath)
         } else {
             val file = e.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
             service.generateCode(file, Modify.NONE)
         }
+    }
+
+    open fun getCodePath(psiFile: PsiFile, offset: Int): String? {
+        return null
     }
 }

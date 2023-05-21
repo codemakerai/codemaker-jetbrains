@@ -33,7 +33,7 @@ class CodeMakerService(private val project: Project) {
 
     private val logger = Logger.getInstance(CodeMakerService::class.java)
 
-    fun generateCode(path: VirtualFile?, modify: Modify) {
+    fun generateCode(path: VirtualFile?, modify: Modify, codePath: String? = null) {
         runInBackground("Generating code") {
             try {
                 val client = createClient()
@@ -43,7 +43,7 @@ class CodeMakerService(private val project: Project) {
                     }
 
                     try {
-                        processFile(client, file, Mode.CODE, modify)
+                        processFile(client, file, Mode.CODE, modify, codePath)
                         return@walkFiles true
                     } catch (e: Exception) {
                         logger.error("Failed to generate code in file.", e)
@@ -56,7 +56,7 @@ class CodeMakerService(private val project: Project) {
         }
     }
 
-    fun generateDocumentation(path: VirtualFile?, modify: Modify) {
+    fun generateDocumentation(path: VirtualFile?, modify: Modify, codePath: String? = null) {
         runInBackground("Generating documentation") {
             try {
                 val client = createClient()
@@ -66,7 +66,7 @@ class CodeMakerService(private val project: Project) {
                     }
 
                     try {
-                        processFile(client, file, Mode.DOCUMENT, modify)
+                        processFile(client, file, Mode.DOCUMENT, modify, codePath)
                         return@walkFiles true
                     } catch (e: Exception) {
                         logger.error("Failed to generate documentation in file.", e)
@@ -93,8 +93,8 @@ class CodeMakerService(private val project: Project) {
     }
 
     @Throws(InterruptedException::class)
-    private fun process(client: Client, mode: Mode, language: Language, source: String, modify: Modify): String {
-        val processResponse = client.createProcess(createProcessRequest(mode, language, source, modify))
+    private fun process(client: Client, mode: Mode, language: Language, source: String, modify: Modify, codePath: String?): String {
+        val processResponse = client.createProcess(createProcessRequest(mode, language, source, modify, codePath))
         val timeout = Instant.now().plus(10, ChronoUnit.MINUTES)
 
         while (timeout.isAfter(Instant.now())) {
@@ -129,12 +129,12 @@ class CodeMakerService(private val project: Project) {
         return file.isDirectory || FileExtensions.isSupported(file.extension)
     }
 
-    private fun processFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify) {
+    private fun processFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify, codePath: String?) {
         try {
             val source = readFile(file) ?: return
 
             val language = FileExtensions.languageFromExtension(file.extension)
-            val output = process(client, mode, language!!, source, modify)
+            val output = process(client, mode, language!!, source, modify, codePath)
 
             writeFile(file, output)
         } catch (e: Exception) {
@@ -179,13 +179,13 @@ class CodeMakerService(private val project: Project) {
                 || status.status == Status.TIMED_OUT
     }
 
-    private fun createProcessRequest(mode: Mode, language: Language, source: String, modify: Modify): CreateProcessRequest {
+    private fun createProcessRequest(mode: Mode, language: Language, source: String, modify: Modify, codePath: String?): CreateProcessRequest {
         return CreateProcessRequest(
                 Process(
                         mode,
                         language,
                         Input(source),
-                        Options(modify)
+                        Options(modify, codePath)
                 )
         )
     }
