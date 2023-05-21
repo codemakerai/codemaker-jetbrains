@@ -5,6 +5,4 @@ package ai.codemaker.jetbrains.action
 
 import ai.codemaker.sdk.client.model.Modify
 
-class GenerateCodeAction : BaseCodeAction(Modify.NONE) {
-
-}
+class GenerateCodeAction : BaseCodeAction(Modify.NONE)
