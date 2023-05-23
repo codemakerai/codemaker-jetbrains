@@ -13,6 +13,7 @@ import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -45,11 +46,15 @@ class CodeMakerService(private val project: Project) {
                     try {
                         processFile(client, file, Mode.CODE, modify, codePath)
                         return@walkFiles true
+                    } catch(e: ProcessCanceledException) {
+                        throw e
                     } catch (e: Exception) {
                         logger.error("Failed to generate code in file.", e)
                         return@walkFiles false
                     }
                 }
+            } catch(e: ProcessCanceledException) {
+                throw e
             } catch (e: Exception) {
                 logger.error("Failed to generate code in file.", e)
             }
@@ -68,11 +73,15 @@ class CodeMakerService(private val project: Project) {
                     try {
                         processFile(client, file, Mode.DOCUMENT, modify, codePath)
                         return@walkFiles true
+                    } catch(e: ProcessCanceledException) {
+                        throw e
                     } catch (e: Exception) {
                         logger.error("Failed to generate documentation in file.", e)
                         return@walkFiles false
                     }
                 }
+            } catch(e: ProcessCanceledException) {
+                throw e
             } catch (e: Exception) {
                 logger.error("Failed to generate documentation in file.", e)
             }
@@ -80,7 +89,7 @@ class CodeMakerService(private val project: Project) {
     }
 
     private fun runInBackground(title: String, runnable: Runnable) {
-        val task = object : Task.Backgroundable(project, title, false) {
+        val task = object : Task.Backgroundable(project, title, true) {
             override fun run(indicator: ProgressIndicator) {
                 indicator.text = "Processing"
                 indicator.isIndeterminate = false
@@ -109,6 +118,7 @@ class CodeMakerService(private val project: Project) {
             }
 
             TimeUnit.MILLISECONDS.sleep(1000)
+            ProgressManager.checkCanceled()
         }
 
         val processOutput = client.getProcessOutput(
@@ -137,6 +147,8 @@ class CodeMakerService(private val project: Project) {
             val output = process(client, mode, language!!, source, modify, codePath)
 
             writeFile(file, output)
+        } catch(e: ProcessCanceledException) {
+            throw e
         } catch (e: Exception) {
             logger.error("Failed to process file.", e)
         }
