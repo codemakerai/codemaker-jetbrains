@@ -13,6 +13,7 @@ class FileExtensions {
                 "jsx" to Language.JAVASCRIPT,
                 "java" to Language.JAVA,
                 "kt" to Language.KOTLIN,
+                "go" to Language.GO,
         )
 
         fun isSupported(extension: String?): Boolean {
