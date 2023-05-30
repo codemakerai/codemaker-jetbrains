@@ -46,14 +46,14 @@ class CodeMakerService(private val project: Project) {
                     try {
                         processFile(client, file, Mode.CODE, modify, codePath)
                         return@walkFiles true
-                    } catch(e: ProcessCanceledException) {
+                    } catch (e: ProcessCanceledException) {
                         throw e
                     } catch (e: Exception) {
                         logger.error("Failed to generate code in file.", e)
                         return@walkFiles false
                     }
                 }
-            } catch(e: ProcessCanceledException) {
+            } catch (e: ProcessCanceledException) {
                 throw e
             } catch (e: Exception) {
                 logger.error("Failed to generate code in file.", e)
@@ -73,14 +73,14 @@ class CodeMakerService(private val project: Project) {
                     try {
                         processFile(client, file, Mode.DOCUMENT, modify, codePath)
                         return@walkFiles true
-                    } catch(e: ProcessCanceledException) {
+                    } catch (e: ProcessCanceledException) {
                         throw e
                     } catch (e: Exception) {
                         logger.error("Failed to generate documentation in file.", e)
                         return@walkFiles false
                     }
                 }
-            } catch(e: ProcessCanceledException) {
+            } catch (e: ProcessCanceledException) {
                 throw e
             } catch (e: Exception) {
                 logger.error("Failed to generate documentation in file.", e)
@@ -147,7 +147,7 @@ class CodeMakerService(private val project: Project) {
             val output = process(client, mode, language!!, source, modify, codePath)
 
             writeFile(file, output)
-        } catch(e: ProcessCanceledException) {
+        } catch (e: ProcessCanceledException) {
             throw e
         } catch (e: Exception) {
             logger.error("Failed to process file.", e)

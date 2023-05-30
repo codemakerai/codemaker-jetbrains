@@ -14,13 +14,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
-import javax.swing.ImageIcon
 
 class StartupActivity : ProjectActivity {
     companion object {
         private const val NOTIFICATION_TITLE = "CodeMaker AI"
         private const val NOTIFICATION_MESSAGE = "Configure JetBrains plugin."
-        private const val NOTIFICATION_ICON = "icons/icon-small.svg"
     }
 
     override suspend fun execute(project: Project) {
