@@ -8,7 +8,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.util.parentOfType
 
-class PsiMethod(private val psiElement: PsiNameIdentifierOwner?) {
+class PsiMethod(psiElement: PsiNameIdentifierOwner) {
+
+    private val element: IdentifiableElement = createIdentifiableElement(psiElement)
 
     companion object {
         private val TYPES = setOf(
@@ -16,7 +18,6 @@ class PsiMethod(private val psiElement: PsiNameIdentifierOwner?) {
                 "org.jetbrains.kotlin.psi.KtNamedFunction",
                 "com.intellij.lang.javascript.psi.impl.JSFunctionImpl",
                 "com.goide.psi.impl.GoFunctionDeclarationImpl",
-                "com.goide.psi.impl.GoMethodDeclarationImpl",
         )
 
         fun isMethod(element: PsiElement): Boolean {
@@ -26,35 +27,48 @@ class PsiMethod(private val psiElement: PsiNameIdentifierOwner?) {
 
     val name: String?
         get() {
-            return getFullQualifiedName()
+            return element.fullyQualifiedName
         }
 
     val codePath: String?
         get() {
-            val name = getFullQualifiedName() ?: return null
+            val name = element.fullyQualifiedName ?: return null
             return "${name}(*)"
         }
 
-    private fun getFullQualifiedName(): String? {
-        val stack = ArrayDeque<String>()
+    private fun createIdentifiableElement(psiElement: PsiNameIdentifierOwner): IdentifiableElement {
+        return NamedElement(psiElement)
+    }
 
-        var element = psiElement
-        while (element != null && element.name != null) {
-            stack.addLast(element.name!!)
-            element = element.parentOfType()
-        }
+    private interface IdentifiableElement {
+        val fullyQualifiedName: String?
+    }
 
-        if (stack.isEmpty()) {
-            return null
-        }
+    private class NamedElement(psiElement: PsiNameIdentifierOwner) : IdentifiableElement {
 
-        val builder = StringBuilder()
-        while (!stack.isEmpty()) {
-            if (builder.isNotEmpty()) {
-                builder.append('.')
+        override val fullyQualifiedName = this.elementFullyQualifiedName(psiElement)
+
+        private fun elementFullyQualifiedName(psiElement: PsiNameIdentifierOwner): String? {
+            val stack = ArrayDeque<String>()
+
+            var element: PsiNameIdentifierOwner? = psiElement
+            while (element != null && element.name != null) {
+                stack.addLast(element.name!!)
+                element = element.parentOfType()
             }
-            builder.append(stack.removeLast())
+
+            if (stack.isEmpty()) {
+                return null
+            }
+
+            val builder = StringBuilder()
+            while (!stack.isEmpty()) {
+                if (builder.isNotEmpty()) {
+                    builder.append('.')
+                }
+                builder.append(stack.removeLast())
+            }
+            return builder.toString()
         }
-        return builder.toString()
     }
 }
