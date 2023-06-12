@@ -24,20 +24,30 @@ public class DefaultClient implements Client {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private final String apiKey;
+    private final ApiKeyProvider apiKeyProvider;
 
     private final Config config;
 
-    public DefaultClient(String apiKey) {
-        this(apiKey, Config.create());
+    public DefaultClient(ApiKeyProvider apiKeyProvider) {
+        this(apiKeyProvider, Config.create());
     }
 
-    public DefaultClient(String apiKey, Config config) {
-        checkNotNull(apiKey, "apiKey");
+    public DefaultClient(ApiKeyProvider apiKeyProvider, Config config) {
+        checkNotNull(apiKeyProvider, "apiKeyProvider");
         checkNotNull(config, "config");
 
-        this.apiKey = apiKey;
+        this.apiKeyProvider = apiKeyProvider;
         this.config = config;
+    }
+
+    private static boolean isSuccess(int code) {
+        return code >= 200 && code < 300;
+    }
+
+    private static void checkNotNull(Object value, String name) {
+        if (value == null) {
+            throw new IllegalArgumentException(String.format("Parameter %s can not be null.", name));
+        }
     }
 
     @Override
@@ -61,7 +71,7 @@ public class DefaultClient implements Client {
             final ClassicHttpRequest httpRequest = ClassicRequestBuilder.post(endpoint(path))
                     .addHeader("Accept", "application/json")
                     .addHeader("User-Agent", "CodeMakerSdkJava/1.9.0")
-                    .addHeader("Authorization", String.format("Bearer %s", apiKey))
+                    .addHeader("Authorization", String.format("Bearer %s", apiKeyProvider.getApiKey()))
                     .setEntity(body, ContentType.APPLICATION_JSON)
                     .build();
             return client.execute(httpRequest, response -> {
@@ -87,15 +97,5 @@ public class DefaultClient implements Client {
 
     private String endpoint(String path) {
         return String.format("%s%s", config.getEndpoint(), path);
-    }
-
-    private static boolean isSuccess(int code) {
-        return code >= 200 && code < 300;
-    }
-
-    private static void checkNotNull(Object value, String name) {
-        if (value == null) {
-            throw new IllegalArgumentException(String.format("Parameter %s can not be null.", name));
-        }
     }
 }

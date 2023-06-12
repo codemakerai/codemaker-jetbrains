@@ -17,6 +17,7 @@ class PsiMethod(psiElement: PsiNameIdentifierOwner) {
                 "com.intellij.psi.impl.source.PsiMethodImpl",
                 "org.jetbrains.kotlin.psi.KtNamedFunction",
                 "com.intellij.lang.javascript.psi.impl.JSFunctionImpl",
+                "com.intellij.lang.javascript.psi.ecma6.impl.TypeScriptFunctionImpl",
                 "com.goide.psi.impl.GoFunctionDeclarationImpl",
                 "com.goide.psi.impl.GoMethodDeclarationImpl",
         )

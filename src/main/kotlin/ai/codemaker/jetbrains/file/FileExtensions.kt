@@ -11,6 +11,8 @@ class FileExtensions {
         private val languageByExtension = hashMapOf(
                 "js" to Language.JAVASCRIPT,
                 "jsx" to Language.JAVASCRIPT,
+                "ts" to Language.TYPESCRIPT,
+                "tsx" to Language.TYPESCRIPT,
                 "java" to Language.JAVA,
                 "kt" to Language.KOTLIN,
                 "go" to Language.GO,

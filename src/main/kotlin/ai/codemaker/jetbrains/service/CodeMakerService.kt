@@ -34,10 +34,13 @@ class CodeMakerService(private val project: Project) {
 
     private val logger = Logger.getInstance(CodeMakerService::class.java)
 
+    private val client: Client = DefaultClient {
+        instance.apiKey
+    }
+
     fun generateCode(path: VirtualFile?, modify: Modify, codePath: String? = null) {
         runInBackground("Generating code") {
             try {
-                val client = createClient()
                 walkFiles(path) { file: VirtualFile ->
                     if (file.isDirectory) {
                         return@walkFiles true
@@ -64,7 +67,6 @@ class CodeMakerService(private val project: Project) {
     fun generateDocumentation(path: VirtualFile?, modify: Modify, codePath: String? = null) {
         runInBackground("Generating documentation") {
             try {
-                val client = createClient()
                 walkFiles(path) { file: VirtualFile ->
                     if (file.isDirectory) {
                         return@walkFiles true
@@ -175,11 +177,6 @@ class CodeMakerService(private val project: Project) {
                         documentManager.commitDocument(document)
                     })
         }
-    }
-
-    private fun createClient(): Client {
-        val appSettings = instance
-        return DefaultClient(appSettings.apiKey)
     }
 
     private fun isCompleted(status: GetProcessStatusResponse): Boolean {

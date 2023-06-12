@@ -42,7 +42,7 @@ public class DefaultClientTest {
         this.client = client;
         registerExpectations(this.client);
         instance = new DefaultClient(
-                API_KEY,
+                () -> API_KEY,
                 Config.builder()
                         .withEndpoint(getEndpoint(this.client))
                         .build()

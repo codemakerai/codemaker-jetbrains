@@ -5,6 +5,7 @@ package ai.codemaker.sdk.client.model;
 
 public enum Language {
     JAVASCRIPT,
+    TYPESCRIPT,
     JAVA,
     KOTLIN,
     GO

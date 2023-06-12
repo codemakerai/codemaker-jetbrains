@@ -14,16 +14,16 @@ public class Config {
         this.endpoint = builder.endpoint;
     }
 
-    public String getEndpoint() {
-        return endpoint;
-    }
-
     public static Config create() {
         return builder().build();
     }
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    public String getEndpoint() {
+        return endpoint;
     }
 
     public static class Builder {
