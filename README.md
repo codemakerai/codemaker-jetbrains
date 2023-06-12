@@ -10,6 +10,7 @@ Fallowing operations are supported:
 
 * Context-aware source code generation.
 * Generating source code documentation.
+* Contextual operations or functions and methods.
 
 ## Supported languages
 
