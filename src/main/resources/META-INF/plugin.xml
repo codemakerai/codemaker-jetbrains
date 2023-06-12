@@ -27,6 +27,9 @@
         <p>Following programming languages are supported:</p>
         <uL>
             <li>JavaScript</li>
+            <li>JSX</li>
+            <li>TypeScript</li>
+            <li>TSX</li>
             <li>Java</li>
             <li>Go</li>
             <li>Kotlin</li>
