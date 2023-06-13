@@ -40,16 +40,6 @@ public class DefaultClient implements Client {
         this.config = config;
     }
 
-    private static boolean isSuccess(int code) {
-        return code >= 200 && code < 300;
-    }
-
-    private static void checkNotNull(Object value, String name) {
-        if (value == null) {
-            throw new IllegalArgumentException(String.format("Parameter %s can not be null.", name));
-        }
-    }
-
     @Override
     public CreateProcessResponse createProcess(CreateProcessRequest request) {
         return doRequest(request, "/process", CreateProcessResponse.class);
@@ -75,7 +65,9 @@ public class DefaultClient implements Client {
                     .setEntity(body, ContentType.APPLICATION_JSON)
                     .build();
             return client.execute(httpRequest, response -> {
-                if (!isSuccess(response.getCode())) {
+                if (isUnauthorized(response.getCode())) {
+                    throw new UnauthorizedException("Unauthorized request.");
+                } else if (!isSuccess(response.getCode())) {
                     throw new ClientException(String.format("Request failed with status code %d", response.getCode()));
                 }
 
@@ -97,5 +89,19 @@ public class DefaultClient implements Client {
 
     private String endpoint(String path) {
         return String.format("%s%s", config.getEndpoint(), path);
+    }
+
+    private static boolean isSuccess(int code) {
+        return code >= 200 && code < 300;
+    }
+
+    private static boolean isUnauthorized(int code) {
+        return code == 401;
+    }
+
+    private static void checkNotNull(Object value, String name) {
+        if (value == null) {
+            throw new IllegalArgumentException(String.format("Parameter %s can not be null.", name));
+        }
     }
 }

@@ -7,6 +7,7 @@ import ai.codemaker.jetbrains.file.FileExtensions
 import ai.codemaker.jetbrains.settings.AppSettingsState.Companion.instance
 import ai.codemaker.sdk.client.Client
 import ai.codemaker.sdk.client.DefaultClient
+import ai.codemaker.sdk.client.UnauthorizedException
 import ai.codemaker.sdk.client.model.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
@@ -151,6 +152,8 @@ class CodeMakerService(private val project: Project) {
             writeFile(file, output)
         } catch (e: ProcessCanceledException) {
             throw e
+        } catch(e: UnauthorizedException) {
+            logger.error("Unauthorized request. Configure the the API Key in the Preferences > Tools > CodeMaker AI menu.", e)
         } catch (e: Exception) {
             logger.error("Failed to process file.", e)
         }
