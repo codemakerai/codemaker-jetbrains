@@ -27,13 +27,12 @@
         <h3>Supported languages</h3>
         <p>Following programming languages are supported:</p>
         <uL>
-            <li>JavaScript</li>
-            <li>JSX</li>
-            <li>TypeScript</li>
-            <li>TSX</li>
+            <li>JavaScript & JSX</li>
+            <li>TypeScript & TSX</li>
             <li>Java</li>
-            <li>Go</li>
             <li>Kotlin</li>
+            <li>C#</li>
+            <li>Go</li>
         </ul>
 
         <h3>Getting started</h3>

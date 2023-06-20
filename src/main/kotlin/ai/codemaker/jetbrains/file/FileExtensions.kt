@@ -15,6 +15,7 @@ class FileExtensions {
                 "tsx" to Language.TYPESCRIPT,
                 "java" to Language.JAVA,
                 "kt" to Language.KOTLIN,
+                "cs" to Language.CSHARP,
                 "go" to Language.GO,
         )
 

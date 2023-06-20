@@ -8,5 +8,6 @@ public enum Language {
     TYPESCRIPT,
     JAVA,
     KOTLIN,
+    CSHARP,
     GO
 }

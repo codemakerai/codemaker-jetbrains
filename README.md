@@ -16,13 +16,12 @@ Fallowing operations are supported:
 
 Following programming languages are supported:
 
-* JavaScript
-* JSX
-* TypeScript
-* TSX
+* JavaScript & JSX
+* TypeScript & TSX
 * Java
-* Go
 * Kotlin
+* C#
+* Go
   
 More language support is coming soon.
 
