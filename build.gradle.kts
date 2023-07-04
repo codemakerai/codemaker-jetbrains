@@ -1,7 +1,7 @@
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.7.20"
-    id("org.jetbrains.intellij") version "1.13.3"
+    id("org.jetbrains.intellij") version "1.14.2"
 }
 
 group = "ai.codemaker.jetbrains"
@@ -16,7 +16,7 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
