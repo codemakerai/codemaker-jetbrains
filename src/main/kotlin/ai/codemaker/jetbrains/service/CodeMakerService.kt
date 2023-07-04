@@ -39,6 +39,32 @@ class CodeMakerService(private val project: Project) {
         instance.apiKey
     }
 
+    fun predictiveGenerate(path: VirtualFile?, modify: Modify, codePath: String? = null) {
+        runInBackground("Predictive generation") {
+            try {
+                walkFiles(path) { file: VirtualFile ->
+                    if (file.isDirectory) {
+                        return@walkFiles true
+                    }
+
+                    try {
+                        predictiveProcessFile(client, file, Mode.CODE, modify, codePath)
+                        return@walkFiles true
+                    } catch (e: ProcessCanceledException) {
+                        throw e
+                    } catch (e: Exception) {
+                        logger.error("Failed to generate code in file.", e)
+                        return@walkFiles false
+                    }
+                }
+            } catch (e: ProcessCanceledException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error("Failed to generate code in file.", e)
+            }
+        }
+    }
+
     fun generateCode(path: VirtualFile?, modify: Modify, codePath: String? = null) {
         runInBackground("Generating code") {
             try {
@@ -130,6 +156,11 @@ class CodeMakerService(private val project: Project) {
         return processOutput.output.source
     }
 
+    @Throws(InterruptedException::class)
+    private fun predictiveProcess(client: Client, mode: Mode, language: Language, source: String, modify: Modify, codePath: String?) {
+        client.createProcess(createProcessRequest(mode, language, source, modify, codePath))
+    }
+
     private fun walkFiles(path: VirtualFile?, iterator: ContentIterator) {
         VfsUtilCore.iterateChildrenRecursively(
                 path!!,
@@ -142,6 +173,21 @@ class CodeMakerService(private val project: Project) {
         return file.isDirectory || FileExtensions.isSupported(file.extension)
     }
 
+    private fun predictiveProcessFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify, codePath: String?) {
+        try {
+            val source = readFile(file) ?: return
+
+            val language = FileExtensions.languageFromExtension(file.extension)
+            predictiveProcess(client, mode, language!!, source, modify, codePath)
+        } catch (e: ProcessCanceledException) {
+            throw e
+        } catch (e: UnauthorizedException) {
+            logger.error("Unauthorized request. Configure the the API Key in the Preferences > Tools > CodeMaker AI menu.", e)
+        } catch (e: Exception) {
+            logger.error("Failed to process file.", e)
+        }
+    }
+
     private fun processFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify, codePath: String?) {
         try {
             val source = readFile(file) ?: return
@@ -152,7 +198,7 @@ class CodeMakerService(private val project: Project) {
             writeFile(file, output)
         } catch (e: ProcessCanceledException) {
             throw e
-        } catch(e: UnauthorizedException) {
+        } catch (e: UnauthorizedException) {
             logger.error("Unauthorized request. Configure the the API Key in the Preferences > Tools > CodeMaker AI menu.", e)
         } catch (e: Exception) {
             logger.error("Failed to process file.", e)
