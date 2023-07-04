@@ -26,15 +26,18 @@ class AppSettingsConfigurable : Configurable {
     override fun isModified(): Boolean {
         val settings = AppSettingsState.instance
         return settingsComponent!!.apiKey != settings.apiKey
+                && settingsComponent!!.predictiveGenerationEnabled != settings.predictiveGenerationEnabled
     }
 
     override fun apply() {
         val settings = AppSettingsState.instance
         settings.apiKey = settingsComponent!!.apiKey
+        settings.predictiveGenerationEnabled = settingsComponent!!.predictiveGenerationEnabled
     }
 
     override fun reset() {
         val settings = AppSettingsState.instance
         settingsComponent!!.apiKey = settings.apiKey
+        settingsComponent!!.predictiveGenerationEnabled = settings.predictiveGenerationEnabled
     }
 }

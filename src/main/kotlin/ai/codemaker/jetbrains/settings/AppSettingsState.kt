@@ -15,6 +15,9 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     @JvmField
     var apiKey: String? = null
 
+    @JvmField
+    var predictiveGenerationEnabled: Boolean = false
+
     override fun getState(): AppSettingsState {
         return this
     }

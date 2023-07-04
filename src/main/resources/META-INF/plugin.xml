@@ -106,6 +106,16 @@
         </group>
     </actions>
 
+    <extensions defaultExtensionNs="com.intellij">
+        <actionOnSave implementation="ai.codemaker.jetbrains.extension.PredictiveSaveActionExtension" />
+    </extensions>
+
+    <projectListeners>
+        <listener
+                class="ai.codemaker.jetbrains.listener.PredictiveFileManagerListener"
+                topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+    </projectListeners>
+
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
