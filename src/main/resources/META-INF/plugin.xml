@@ -22,6 +22,7 @@
             <li>Context-aware source code generation.</li>
             <li>Generating source code documentation.</li>
             <li>Contextual operations for functions and methods.</li>
+            <li>Predictive code generation.</li>
         </ul>
 
         <h3>Supported languages</h3>
