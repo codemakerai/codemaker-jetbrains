@@ -26,8 +26,8 @@ class AppSettingsConfigurable : Configurable {
     override fun isModified(): Boolean {
         val settings = AppSettingsState.instance
         return settingsComponent!!.apiKey != settings.apiKey
-                && settingsComponent!!.codeActionsEnabled != settings.codeActionsEnabled
-                && settingsComponent!!.predictiveGenerationEnabled != settings.predictiveGenerationEnabled
+                || settingsComponent!!.codeActionsEnabled != settings.codeActionsEnabled
+                || settingsComponent!!.predictiveGenerationEnabled != settings.predictiveGenerationEnabled
     }
 
     override fun apply() {

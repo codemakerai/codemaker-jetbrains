@@ -8,9 +8,10 @@ import ai.codemaker.jetbrains.psi.PsiUtils
 import ai.codemaker.jetbrains.service.CodeMakerService
 import com.intellij.codeInsight.intention.HighPriorityAction
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction
-import com.intellij.openapi.editor.Document
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 
 abstract class BaseGenerationQuickFix(private val text: String) : BaseIntentionAction(), HighPriorityAction {
@@ -27,6 +28,10 @@ abstract class BaseGenerationQuickFix(private val text: String) : BaseIntentionA
         return true
     }
 
+    override fun generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo {
+        return IntentionPreviewInfo.EMPTY
+    }
+
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
         if (editor == null) {
             return
@@ -37,8 +42,8 @@ abstract class BaseGenerationQuickFix(private val text: String) : BaseIntentionA
 
         val service: CodeMakerService = project.getService(CodeMakerService::class.java) ?: return
         val method = PsiUtils.getMethod(file, editor.caretModel.offset) ?: return
-        doInvoke(service, project, editor.document, method.codePath)
+        doInvoke(service, file.virtualFile, method.codePath)
     }
 
-    abstract fun doInvoke(service: CodeMakerService, project: Project, document: Document, codePath: String?)
+    abstract fun doInvoke(service: CodeMakerService, file: VirtualFile, codePath: String?)
 }
