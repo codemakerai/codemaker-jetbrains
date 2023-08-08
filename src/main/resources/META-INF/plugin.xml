@@ -22,6 +22,7 @@
             <li>Context-aware source code generation.</li>
             <li>Generating source code documentation.</li>
             <li>Contextual operations for functions and methods.</li>
+            <li>Quick fix code generation actions.</li>
             <li>Predictive code generation.</li>
         </ul>
 
@@ -130,6 +131,22 @@
                                  displayName="CodeMaker AI"
                                  instance="ai.codemaker.jetbrains.settings.AppSettingsConfigurable"/>
         <applicationService serviceImplementation="ai.codemaker.jetbrains.settings.AppSettingsState"/>
+
+        <annotator language="JavaScript" implementationClass="ai.codemaker.jetbrains.annotator.QuickFixAnnotator" />
+        <annotator language="TypeScript" implementationClass="ai.codemaker.jetbrains.annotator.QuickFixAnnotator" />
+        <annotator language="JAVA" implementationClass="ai.codemaker.jetbrains.annotator.QuickFixAnnotator" />
+        <annotator language="kotlin" implementationClass="ai.codemaker.jetbrains.annotator.QuickFixAnnotator" />
+        <annotator language="go" implementationClass="ai.codemaker.jetbrains.annotator.QuickFixAnnotator" />
+
+        <intentionAction>
+            <language>ANY</language>
+            <className>ai.codemaker.jetbrains.quickfix.ReplaceCodeQuickFix</className>
+        </intentionAction>
+
+        <intentionAction>
+            <language>ANY</language>
+            <className>ai.codemaker.jetbrains.quickfix.ReplaceDocumentationQuickFix</className>
+        </intentionAction>
     </extensions>
 
 </idea-plugin>

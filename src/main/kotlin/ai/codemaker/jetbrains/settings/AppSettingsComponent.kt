@@ -12,11 +12,13 @@ import javax.swing.JPanel
 class AppSettingsComponent {
     val panel: JPanel
     private val apiKeyText = JBTextField()
+    private val codeActionsEnabledCheck = JBCheckBox()
     private val predictiveGenerationEnabledCheck = JBCheckBox()
 
     init {
         panel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(JBLabel("API Key: "), apiKeyText, 1, false)
+                .addLabeledComponent(JBLabel("Enable code actions: "), codeActionsEnabledCheck, 1, false)
                 .addLabeledComponent(JBLabel("Enable predictive generation: "), predictiveGenerationEnabledCheck, 1, false)
                 .addComponentFillVertically(JPanel(), 0)
                 .panel
@@ -26,6 +28,12 @@ class AppSettingsComponent {
         get() = apiKeyText.text
         set(apiKey) {
             apiKeyText.text = apiKey
+        }
+
+    var codeActionsEnabled: Boolean
+        get() = codeActionsEnabledCheck.isSelected
+        set(enabled) {
+            codeActionsEnabledCheck.isSelected = enabled
         }
 
     var predictiveGenerationEnabled: Boolean
