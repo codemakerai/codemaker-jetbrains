@@ -30,6 +30,8 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.Callable
 import java.util.concurrent.TimeUnit
 
+private const val l = 500
+
 @Service(Service.Level.PROJECT)
 class CodeMakerService(private val project: Project) {
 
@@ -37,6 +39,10 @@ class CodeMakerService(private val project: Project) {
 
     private val client: Client = DefaultClient {
         instance.apiKey
+    }
+
+    companion object {
+        private val POLLING_DELAY_IN_MILISECONDS = 500L
     }
 
     fun predictiveGenerate(path: VirtualFile?, modify: Modify, codePath: String? = null) {
@@ -146,7 +152,7 @@ class CodeMakerService(private val project: Project) {
                 throw RuntimeException("Processing task had failed")
             }
 
-            TimeUnit.MILLISECONDS.sleep(1000)
+            TimeUnit.MILLISECONDS.sleep(POLLING_DELAY_IN_MILISECONDS)
             ProgressManager.checkCanceled()
         }
 
