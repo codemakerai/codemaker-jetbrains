@@ -97,6 +97,32 @@ class CodeMakerService(private val project: Project) {
         }
     }
 
+    fun generateInlineCode(path: VirtualFile?, modify: Modify, codePath: String? = null) {
+        runInBackground("Generating inline code") {
+            try {
+                walkFiles(path) { file: VirtualFile ->
+                    if (file.isDirectory) {
+                        return@walkFiles true
+                    }
+
+                    try {
+                        processFile(client, file, Mode.INLINE_CODE, modify, codePath)
+                        return@walkFiles true
+                    } catch (e: ProcessCanceledException) {
+                        throw e
+                    } catch (e: Exception) {
+                        logger.error("Failed to generate inline code in file.", e)
+                        return@walkFiles false
+                    }
+                }
+            } catch (e: ProcessCanceledException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error("Failed to generate inline code in file.", e)
+            }
+        }
+    }
+
     fun generateDocumentation(path: VirtualFile?, modify: Modify, codePath: String? = null) {
         runInBackground("Generating documentation") {
             try {

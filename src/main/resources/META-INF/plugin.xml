@@ -19,6 +19,7 @@
         <h3>Features</h3>
         <p>Fallowing operations are supported:</p>
         <uL>
+            <li>Context-aware inline source code generation.</li>
             <li>Context-aware source code generation.</li>
             <li>Generating source code documentation.</li>
             <li>Contextual operations for functions and methods.</li>
@@ -106,6 +107,14 @@
                 <keyboard-shortcut keymap="$default" first-keystroke="shift alt ctrl G" second-keystroke="D"/>
             </action>
         </group>
+
+        <action id="ai.codemaker.jetbrains.GenerateInlineCodeAction"
+                class="ai.codemaker.jetbrains.action.GenerateInlineCodeAction" text="Generate Inline Code"
+                description="Generates inline code">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl ENTER"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="shift ctrl ENTER" replace-all="true"/>
+        </action>
+
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -132,19 +141,14 @@
                                  instance="ai.codemaker.jetbrains.settings.AppSettingsConfigurable"/>
         <applicationService serviceImplementation="ai.codemaker.jetbrains.settings.AppSettingsState"/>
 
-        <annotator language="JavaScript" implementationClass="ai.codemaker.jetbrains.annotator.QuickFixAnnotator" />
-        <annotator language="TypeScript" implementationClass="ai.codemaker.jetbrains.annotator.QuickFixAnnotator" />
-        <annotator language="JAVA" implementationClass="ai.codemaker.jetbrains.annotator.QuickFixAnnotator" />
-        <annotator language="kotlin" implementationClass="ai.codemaker.jetbrains.annotator.QuickFixAnnotator" />
-        <annotator language="go" implementationClass="ai.codemaker.jetbrains.annotator.QuickFixAnnotator" />
+        <annotator language="any" implementationClass="ai.codemaker.jetbrains.annotator.QuickFixAnnotator" />
 
         <intentionAction>
-            <language>ANY</language>
+            <language>any</language>
             <className>ai.codemaker.jetbrains.quickfix.ReplaceCodeQuickFix</className>
         </intentionAction>
-
         <intentionAction>
-            <language>ANY</language>
+            <language>any</language>
             <className>ai.codemaker.jetbrains.quickfix.ReplaceDocumentationQuickFix</className>
         </intentionAction>
     </extensions>
