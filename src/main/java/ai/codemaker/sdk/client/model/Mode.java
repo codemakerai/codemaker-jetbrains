@@ -5,6 +5,7 @@ package ai.codemaker.sdk.client.model;
 
 public enum Mode {
     CODE,
+    INLINE_CODE,
     DOCUMENT,
     UNIT_TEST,
     MIGRATE_SYNTAX,
