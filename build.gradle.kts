@@ -19,7 +19,8 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
     testImplementation("org.mock-server:mockserver-junit-jupiter:5.15.0")
 }
 
