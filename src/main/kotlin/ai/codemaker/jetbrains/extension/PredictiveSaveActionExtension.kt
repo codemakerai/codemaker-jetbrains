@@ -9,7 +9,6 @@ import com.intellij.ide.actionsOnSave.impl.ActionsOnSaveFileDocumentManagerListe
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
-import com.intellij.testFramework.utils.editor.getVirtualFile
 
 class PredictiveSaveActionExtension : ActionOnSave() {
 
