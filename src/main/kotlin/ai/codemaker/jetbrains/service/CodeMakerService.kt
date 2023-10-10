@@ -45,7 +45,7 @@ class CodeMakerService(private val project: Project) {
         private val POLLING_DELAY_IN_MILISECONDS = 500L
     }
 
-    fun predictiveGenerate(path: VirtualFile?, modify: Modify, codePath: String? = null) {
+    fun predictiveGenerate(path: VirtualFile?, modify: Modify) {
         runInBackground("Predictive generation") {
             try {
                 walkFiles(path) { file: VirtualFile ->
@@ -54,7 +54,7 @@ class CodeMakerService(private val project: Project) {
                     }
 
                     try {
-                        predictiveProcessFile(client, file, Mode.CODE, modify, codePath)
+                        predictiveProcessFile(client, file, Mode.CODE, modify)
                         return@walkFiles true
                     } catch (e: ProcessCanceledException) {
                         throw e
@@ -123,6 +123,32 @@ class CodeMakerService(private val project: Project) {
         }
     }
 
+    fun editCode(path: VirtualFile?, modify: Modify, codePath: String, prompt: String) {
+        runInBackground("Editing code") {
+            try {
+                walkFiles(path) { file: VirtualFile ->
+                    if (file.isDirectory) {
+                        return@walkFiles true
+                    }
+
+                    try {
+                        processFile(client, file, Mode.EDIT_CODE, modify, codePath, prompt)
+                        return@walkFiles true
+                    } catch (e: ProcessCanceledException) {
+                        throw e
+                    } catch (e: Exception) {
+                        logger.error("Failed to edit code in file.", e)
+                        return@walkFiles false
+                    }
+                }
+            } catch (e: ProcessCanceledException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error("Failed to edit code in file.", e)
+            }
+        }
+    }
+
     fun generateDocumentation(path: VirtualFile?, modify: Modify, codePath: String? = null) {
         runInBackground("Generating documentation") {
             try {
@@ -163,8 +189,8 @@ class CodeMakerService(private val project: Project) {
     }
 
     @Throws(InterruptedException::class)
-    private fun process(client: Client, mode: Mode, language: Language, source: String, modify: Modify, codePath: String?): String {
-        val processResponse = client.createProcess(createProcessRequest(mode, language, source, modify, codePath))
+    private fun process(client: Client, mode: Mode, language: Language, source: String, modify: Modify, codePath: String?, prompt: String?): String {
+        val processResponse = client.createProcess(createProcessRequest(mode, language, source, modify, codePath, prompt))
         val timeout = Instant.now().plus(10, ChronoUnit.MINUTES)
 
         while (timeout.isAfter(Instant.now())) {
@@ -189,8 +215,8 @@ class CodeMakerService(private val project: Project) {
     }
 
     @Throws(InterruptedException::class)
-    private fun predictiveProcess(client: Client, mode: Mode, language: Language, source: String, modify: Modify, codePath: String?) {
-        client.createProcess(createProcessRequest(mode, language, source, modify, codePath))
+    private fun predictiveProcess(client: Client, mode: Mode, language: Language, source: String, modify: Modify) {
+        client.createProcess(createProcessRequest(mode, language, source, modify))
     }
 
     private fun walkFiles(path: VirtualFile?, iterator: ContentIterator) {
@@ -205,12 +231,12 @@ class CodeMakerService(private val project: Project) {
         return file.isDirectory || FileExtensions.isSupported(file.extension)
     }
 
-    private fun predictiveProcessFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify, codePath: String?) {
+    private fun predictiveProcessFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify) {
         try {
             val source = readFile(file) ?: return
 
             val language = FileExtensions.languageFromExtension(file.extension)
-            predictiveProcess(client, mode, language!!, source, modify, codePath)
+            predictiveProcess(client, mode, language!!, source, modify)
         } catch (e: ProcessCanceledException) {
             throw e
         } catch (e: UnauthorizedException) {
@@ -220,12 +246,12 @@ class CodeMakerService(private val project: Project) {
         }
     }
 
-    private fun processFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify, codePath: String?) {
+    private fun processFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify, codePath: String? = null, prompt: String? = null) {
         try {
             val source = readFile(file) ?: return
 
             val language = FileExtensions.languageFromExtension(file.extension)
-            val output = process(client, mode, language!!, source, modify, codePath)
+            val output = process(client, mode, language!!, source, modify, codePath, prompt)
 
             writeFile(file, output)
         } catch (e: ProcessCanceledException) {
@@ -269,13 +295,13 @@ class CodeMakerService(private val project: Project) {
                 || status.status == Status.TIMED_OUT
     }
 
-    private fun createProcessRequest(mode: Mode, language: Language, source: String, modify: Modify, codePath: String?): CreateProcessRequest {
+    private fun createProcessRequest(mode: Mode, language: Language, source: String, modify: Modify, codePath: String? = null, prompt: String? = null): CreateProcessRequest {
         return CreateProcessRequest(
                 Process(
                         mode,
                         language,
                         Input(source),
-                        Options(modify, codePath)
+                        Options(modify, codePath, prompt)
                 )
         )
     }

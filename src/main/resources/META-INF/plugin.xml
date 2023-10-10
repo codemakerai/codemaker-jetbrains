@@ -67,6 +67,10 @@
         <group id="ai.codemaker.jetbrains.ReplaceMethod" class="ai.codemaker.jetbrains.group.ReplaceMethodGroup"
                text="Replace Method" description="Replaces method" popup="true">
             <add-to-group group-id="ai.codemaker.jetbrains.EditorPopupMenu" anchor="last"/>
+            <action id="ai.codemaker.jetbrains.EditMethodCodeAction"
+                    class="ai.codemaker.jetbrains.action.EditMethodCodeAction" text="Edit Code with Prompt"
+                    description="Edits code">
+            </action>
             <action id="ai.codemaker.jetbrains.ReplaceMethodCodeAction"
                     class="ai.codemaker.jetbrains.action.ReplaceMethodCodeAction" text="Replace Method Code"
                     description="Replaces method code">
@@ -143,6 +147,10 @@
 
         <annotator language="any" implementationClass="ai.codemaker.jetbrains.annotator.QuickFixAnnotator" />
 
+        <intentionAction>
+            <language>any</language>
+            <className>ai.codemaker.jetbrains.quickfix.EditCodeQuickFix</className>
+        </intentionAction>
         <intentionAction>
             <language>any</language>
             <className>ai.codemaker.jetbrains.quickfix.ReplaceCodeQuickFix</className>

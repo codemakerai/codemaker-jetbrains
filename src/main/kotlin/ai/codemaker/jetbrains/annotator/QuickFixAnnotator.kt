@@ -5,6 +5,7 @@
 package ai.codemaker.jetbrains.annotator
 
 import ai.codemaker.jetbrains.psi.PsiMethod
+import ai.codemaker.jetbrains.quickfix.EditCodeQuickFix
 import ai.codemaker.jetbrains.quickfix.ReplaceCodeQuickFix
 import ai.codemaker.jetbrains.quickfix.ReplaceDocumentationQuickFix
 import ai.codemaker.jetbrains.settings.AppSettingsState
@@ -26,6 +27,7 @@ class QuickFixAnnotator : Annotator {
             return
         }
 
+        registerFix(holder, element, "Edit code with prompt", EditCodeQuickFix())
         registerFix(holder, element, "Replace code", ReplaceCodeQuickFix())
         registerFix(holder, element, "Replace documentation", ReplaceDocumentationQuickFix())
     }

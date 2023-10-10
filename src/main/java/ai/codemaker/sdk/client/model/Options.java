@@ -9,9 +9,12 @@ public class Options {
 
     private final String codePath;
 
-    public Options(Modify modify, String codePath) {
+    private final String prompt;
+
+    public Options(Modify modify, String codePath, String prompt) {
         this.modify = modify;
         this.codePath = codePath;
+        this.prompt = prompt;
     }
 
     public Modify getModify() {
@@ -20,5 +23,9 @@ public class Options {
 
     public String getCodePath() {
         return codePath;
+    }
+
+    public String getPrompt() {
+        return prompt;
     }
 }

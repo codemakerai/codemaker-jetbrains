@@ -4,7 +4,6 @@
 
 package ai.codemaker.jetbrains.quickfix
 
-import ai.codemaker.jetbrains.psi.PsiUtils
 import ai.codemaker.jetbrains.service.CodeMakerService
 import com.intellij.codeInsight.intention.HighPriorityAction
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction
@@ -41,9 +40,11 @@ abstract class BaseGenerationQuickFix(private val text: String) : BaseIntentionA
         }
 
         val service: CodeMakerService = project.getService(CodeMakerService::class.java) ?: return
-        val method = PsiUtils.getMethod(file, editor.caretModel.offset) ?: return
-        doInvoke(service, file.virtualFile, method.codePath)
+        val codePath = getCodePath(file, editor.caretModel.offset) ?: return
+        doInvoke(project, editor, service, file.virtualFile, codePath)
     }
 
-    abstract fun doInvoke(service: CodeMakerService, file: VirtualFile, codePath: String?)
+    abstract fun getCodePath(file: PsiFile, offset: Int): String?
+
+    abstract fun doInvoke(project: Project, editor: Editor, service: CodeMakerService, file: VirtualFile, codePath: String?)
 }
