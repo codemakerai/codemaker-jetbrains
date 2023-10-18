@@ -11,4 +11,5 @@ public enum Mode {
     UNIT_TEST,
     MIGRATE_SYNTAX,
     REFACTOR_NAMING,
+    FIX_SYNTAX,
 }

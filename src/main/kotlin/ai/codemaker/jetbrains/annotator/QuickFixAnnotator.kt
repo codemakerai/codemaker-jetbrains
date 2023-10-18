@@ -29,6 +29,7 @@ class QuickFixAnnotator : Annotator {
 
         registerFix(holder, element, "Edit code with prompt", EditCodeQuickFix())
         registerFix(holder, element, "Replace code", ReplaceCodeQuickFix())
+        registerFix(holder, element, "Fix code", ReplaceDocumentationQuickFix())
         registerFix(holder, element, "Replace documentation", ReplaceDocumentationQuickFix())
     }
 

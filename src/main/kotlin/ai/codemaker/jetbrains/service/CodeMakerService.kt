@@ -72,85 +72,27 @@ class CodeMakerService(private val project: Project) {
     }
 
     fun generateCode(path: VirtualFile?, modify: Modify, codePath: String? = null) {
-        runInBackground("Generating code") {
-            try {
-                walkFiles(path) { file: VirtualFile ->
-                    if (file.isDirectory) {
-                        return@walkFiles true
-                    }
-
-                    try {
-                        processFile(client, file, Mode.CODE, modify, codePath)
-                        return@walkFiles true
-                    } catch (e: ProcessCanceledException) {
-                        throw e
-                    } catch (e: Exception) {
-                        logger.error("Failed to generate code in file.", e)
-                        return@walkFiles false
-                    }
-                }
-            } catch (e: ProcessCanceledException) {
-                throw e
-            } catch (e: Exception) {
-                logger.error("Failed to generate code in file.", e)
-            }
-        }
+        process(Mode.CODE, "Generating code", path, modify, codePath)
     }
 
     fun generateInlineCode(path: VirtualFile?, modify: Modify, codePath: String? = null) {
-        runInBackground("Generating inline code") {
-            try {
-                walkFiles(path) { file: VirtualFile ->
-                    if (file.isDirectory) {
-                        return@walkFiles true
-                    }
-
-                    try {
-                        processFile(client, file, Mode.INLINE_CODE, modify, codePath)
-                        return@walkFiles true
-                    } catch (e: ProcessCanceledException) {
-                        throw e
-                    } catch (e: Exception) {
-                        logger.error("Failed to generate inline code in file.", e)
-                        return@walkFiles false
-                    }
-                }
-            } catch (e: ProcessCanceledException) {
-                throw e
-            } catch (e: Exception) {
-                logger.error("Failed to generate inline code in file.", e)
-            }
-        }
+        process(Mode.INLINE_CODE, "Generating inline code", path, modify, codePath)
     }
 
     fun editCode(path: VirtualFile?, modify: Modify, codePath: String, prompt: String) {
-        runInBackground("Editing code") {
-            try {
-                walkFiles(path) { file: VirtualFile ->
-                    if (file.isDirectory) {
-                        return@walkFiles true
-                    }
-
-                    try {
-                        processFile(client, file, Mode.EDIT_CODE, modify, codePath, prompt)
-                        return@walkFiles true
-                    } catch (e: ProcessCanceledException) {
-                        throw e
-                    } catch (e: Exception) {
-                        logger.error("Failed to edit code in file.", e)
-                        return@walkFiles false
-                    }
-                }
-            } catch (e: ProcessCanceledException) {
-                throw e
-            } catch (e: Exception) {
-                logger.error("Failed to edit code in file.", e)
-            }
-        }
+        process(Mode.EDIT_CODE, "Editing code", path, modify, codePath, prompt)
     }
 
     fun generateDocumentation(path: VirtualFile?, modify: Modify, codePath: String? = null) {
-        runInBackground("Generating documentation") {
+        process(Mode.DOCUMENT, "Generating documentation", path, modify, codePath)
+    }
+
+    fun fixSyntax(path: VirtualFile?, modify: Modify, codePath: String? = null) {
+        process(Mode.FIX_SYNTAX, "Fixing code", path, modify, codePath)
+    }
+
+    private fun process(mode: Mode, title: String, path: VirtualFile?, modify: Modify, codePath: String?, prompt: String? = null) {
+        runInBackground(title) {
             try {
                 walkFiles(path) { file: VirtualFile ->
                     if (file.isDirectory) {
@@ -158,19 +100,19 @@ class CodeMakerService(private val project: Project) {
                     }
 
                     try {
-                        processFile(client, file, Mode.DOCUMENT, modify, codePath)
+                        processFile(client, file, mode, modify, codePath, prompt)
                         return@walkFiles true
                     } catch (e: ProcessCanceledException) {
                         throw e
                     } catch (e: Exception) {
-                        logger.error("Failed to generate documentation in file.", e)
+                        logger.error("Failed to process $mode in file.", e)
                         return@walkFiles false
                     }
                 }
             } catch (e: ProcessCanceledException) {
                 throw e
             } catch (e: Exception) {
-                logger.error("Failed to generate documentation in file.", e)
+                logger.error("Failed to process $mode task.", e)
             }
         }
     }

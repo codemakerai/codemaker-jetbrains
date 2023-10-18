@@ -157,6 +157,10 @@
         </intentionAction>
         <intentionAction>
             <language>any</language>
+            <className>ai.codemaker.jetbrains.quickfix.FixSyntaxQuickFix</className>
+        </intentionAction>
+        <intentionAction>
+            <language>any</language>
             <className>ai.codemaker.jetbrains.quickfix.ReplaceDocumentationQuickFix</className>
         </intentionAction>
     </extensions>
