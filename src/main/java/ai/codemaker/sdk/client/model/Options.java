@@ -11,10 +11,13 @@ public class Options {
 
     private final String prompt;
 
-    public Options(Modify modify, String codePath, String prompt) {
+    private final boolean detectSyntaxErrors;
+
+    public Options(Modify modify, String codePath, String prompt, boolean detectSyntaxErrors) {
         this.modify = modify;
         this.codePath = codePath;
         this.prompt = prompt;
+        this.detectSyntaxErrors = detectSyntaxErrors;
     }
 
     public Modify getModify() {
@@ -27,5 +30,9 @@ public class Options {
 
     public String getPrompt() {
         return prompt;
+    }
+
+    public boolean isDetectSyntaxErrors() {
+        return detectSyntaxErrors;
     }
 }

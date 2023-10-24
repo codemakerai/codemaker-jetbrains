@@ -243,7 +243,7 @@ class CodeMakerService(private val project: Project) {
                         mode,
                         language,
                         Input(source),
-                        Options(modify, codePath, prompt)
+                        Options(modify, codePath, prompt, true)
                 )
         )
     }

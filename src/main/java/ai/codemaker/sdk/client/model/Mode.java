@@ -12,4 +12,6 @@ public enum Mode {
     MIGRATE_SYNTAX,
     REFACTOR_NAMING,
     FIX_SYNTAX,
+
+    CORRECT_SYNTAX,
 }

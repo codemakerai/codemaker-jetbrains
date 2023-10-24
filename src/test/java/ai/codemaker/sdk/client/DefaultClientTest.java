@@ -58,7 +58,7 @@ public class DefaultClientTest {
                         Mode.DOCUMENT,
                         Language.JAVA,
                         new Input(""),
-                        new Options(Modify.NONE, "Test.method()", "Test prompt")
+                        new Options(Modify.NONE, "Test.method()", "Test prompt", false)
                 )
         );
 

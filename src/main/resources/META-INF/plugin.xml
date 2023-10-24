@@ -112,6 +112,15 @@
             </action>
         </group>
 
+        <group id="ai.codemaker.jetbrains.FixMenu" text="Fix" description="Generate" popup="true">
+            <add-to-group group-id="ai.codemaker.jetbrains.ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="ai.codemaker.jetbrains.EditorPopupMenu" anchor="last"/>
+            <action id="ai.codemaker.jetbrains.FixSyntaxAction"
+                    class="ai.codemaker.jetbrains.action.FixSyntaxAction" text="Fix Syntax"
+                    description="Fixes syntax">
+            </action>
+        </group>
+
         <action id="ai.codemaker.jetbrains.GenerateInlineCodeAction"
                 class="ai.codemaker.jetbrains.action.GenerateInlineCodeAction" text="Generate Inline Code"
                 description="Generates inline code">
