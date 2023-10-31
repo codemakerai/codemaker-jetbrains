@@ -28,6 +28,7 @@ class AppSettingsConfigurable : Configurable {
         return settingsComponent!!.apiKey != settings.apiKey
                 || settingsComponent!!.codeActionsEnabled != settings.codeActionsEnabled
                 || settingsComponent!!.predictiveGenerationEnabled != settings.predictiveGenerationEnabled
+                || settingsComponent!!.syntaxAutocorrectionEnabled != settings.syntaxAutocorrectionEnabled
     }
 
     override fun apply() {
@@ -35,6 +36,7 @@ class AppSettingsConfigurable : Configurable {
         settings.apiKey = settingsComponent!!.apiKey
         settings.codeActionsEnabled = settingsComponent!!.codeActionsEnabled
         settings.predictiveGenerationEnabled = settingsComponent!!.predictiveGenerationEnabled
+        settings.syntaxAutocorrectionEnabled = settingsComponent!!.syntaxAutocorrectionEnabled
     }
 
     override fun reset() {
@@ -42,5 +44,6 @@ class AppSettingsConfigurable : Configurable {
         settingsComponent!!.apiKey = settings.apiKey
         settingsComponent!!.codeActionsEnabled = settings.codeActionsEnabled
         settingsComponent!!.predictiveGenerationEnabled = settings.predictiveGenerationEnabled
+        settingsComponent!!.syntaxAutocorrectionEnabled = settings.syntaxAutocorrectionEnabled
     }
 }

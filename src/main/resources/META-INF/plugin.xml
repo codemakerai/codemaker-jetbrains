@@ -132,11 +132,15 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <actionOnSave implementation="ai.codemaker.jetbrains.extension.PredictiveSaveActionExtension" />
+        <actionOnSave implementation="ai.codemaker.jetbrains.extension.CorrectionSaveActionExtension" />
     </extensions>
 
     <projectListeners>
         <listener
                 class="ai.codemaker.jetbrains.listener.PredictiveFileManagerListener"
+                topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+        <listener
+                class="ai.codemaker.jetbrains.listener.CorrectionFileManagerListener"
                 topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
     </projectListeners>
 
