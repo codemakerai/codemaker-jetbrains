@@ -14,12 +14,14 @@ class AppSettingsComponent {
     private val apiKeyText = JBTextField()
     private val codeActionsEnabledCheck = JBCheckBox()
     private val predictiveGenerationEnabledCheck = JBCheckBox()
+    private val syntaxAutocorrectionEnabledCheck = JBCheckBox()
 
     init {
         panel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(JBLabel("API Key: "), apiKeyText, 1, false)
                 .addLabeledComponent(JBLabel("Enable code actions: "), codeActionsEnabledCheck, 1, false)
                 .addLabeledComponent(JBLabel("Enable predictive generation: "), predictiveGenerationEnabledCheck, 1, false)
+                .addLabeledComponent(JBLabel("Enable syntax autocorrection: "), syntaxAutocorrectionEnabledCheck, 1, false)
                 .addComponentFillVertically(JPanel(), 0)
                 .panel
     }
@@ -40,5 +42,11 @@ class AppSettingsComponent {
         get() = predictiveGenerationEnabledCheck.isSelected
         set(enabled) {
             predictiveGenerationEnabledCheck.isSelected = enabled
+        }
+
+    var syntaxAutocorrectionEnabled: Boolean
+        get() = syntaxAutocorrectionEnabledCheck.isSelected
+        set(enabled) {
+            syntaxAutocorrectionEnabledCheck.isSelected = enabled
         }
 }
