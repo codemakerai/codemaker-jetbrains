@@ -1,0 +1,81 @@
+syntax = "proto3";
+package ai.codemaker.service;
+
+service EdgeService {
+  rpc Completion (CompletionRequest) returns (CompletionResponse);
+  rpc Process (ProcessRequest) returns (ProcessResponse);
+}
+
+enum Mode {
+  CODE = 0;
+  INLINE_CODE = 1;
+  EDIT_CODE = 2;
+  DOCUMENT = 3;
+  FIX_SYNTAX = 4;
+}
+
+enum Language {
+  SQL = 0;
+  JAVA = 7;
+  JAVASCRIPT = 9;
+  CSHARP = 13;
+  GO = 18;
+  KOTLIN = 19;
+  TYPESCRIPT = 20;
+}
+
+enum Encoding {
+  NONE = 0;
+  GZIP = 1;
+}
+
+enum Modify {
+  UNMODIFIED = 0;
+  REPLACE = 1;
+}
+
+message Source {
+  bytes content = 1;
+  Encoding encoding = 2;
+  string checksum = 3;
+}
+
+message Input {
+  Source source = 1;
+}
+
+message Output {
+  Source source = 1;
+}
+
+message ProcessOptions {
+  Modify modify = 1;
+  string codePath = 2;
+  string prompt = 3;
+  bool detectSyntaxErrors = 4;
+}
+
+message CompletionOptions {
+
+}
+
+message ProcessRequest {
+  Mode mode = 1;
+  Language language = 2;
+  Input input = 3;
+  ProcessOptions options = 4;
+}
+
+message ProcessResponse {
+  Output output = 1;
+}
+
+message CompletionRequest {
+  Language language = 1;
+  Input input = 2;
+  CompletionOptions options = 3;
+}
+
+message CompletionResponse {
+  Output output = 1;
+}

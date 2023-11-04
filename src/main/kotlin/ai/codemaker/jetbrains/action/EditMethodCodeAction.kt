@@ -8,7 +8,7 @@ import ai.codemaker.jetbrains.popup.InputPopup
 import ai.codemaker.jetbrains.psi.PsiUtils
 import ai.codemaker.jetbrains.service.CodeMakerService
 import ai.codemaker.jetbrains.ui.UIUtils
-import ai.codemaker.sdk.client.model.Modify
+import ai.codemaker.sdkv2.client.model.Modify
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent

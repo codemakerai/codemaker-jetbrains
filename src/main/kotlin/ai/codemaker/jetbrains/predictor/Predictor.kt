@@ -7,7 +7,7 @@ package ai.codemaker.jetbrains.predictor
 import ai.codemaker.jetbrains.file.FileExtensions
 import ai.codemaker.jetbrains.service.CodeMakerService
 import ai.codemaker.jetbrains.settings.AppSettingsState
-import ai.codemaker.sdk.client.model.Modify
+import ai.codemaker.sdkv2.client.model.Modify
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile

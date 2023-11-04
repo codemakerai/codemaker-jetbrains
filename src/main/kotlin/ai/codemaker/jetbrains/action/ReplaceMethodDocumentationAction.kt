@@ -6,7 +6,7 @@ package ai.codemaker.jetbrains.action
 
 import ai.codemaker.jetbrains.psi.PsiUtils
 import ai.codemaker.jetbrains.ui.UIUtils
-import ai.codemaker.sdk.client.model.Modify
+import ai.codemaker.sdkv2.client.model.Modify
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys

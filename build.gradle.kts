@@ -1,7 +1,10 @@
+import com.google.protobuf.gradle.*
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.7.20"
     id("org.jetbrains.intellij") version "1.16.0"
+    id("com.google.protobuf") version "0.9.4"
 }
 
 group = "ai.codemaker.jetbrains"
@@ -62,5 +65,23 @@ tasks {
 
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.8.0"
+    }
+    plugins {
+        id("grpc") {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.59.0"
+        }
+    }
+    generateProtoTasks {
+        ofSourceSet("main").forEach {
+            it.plugins {
+                id("grpc") { }
+            }
+        }
     }
 }

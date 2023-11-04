@@ -1,6 +1,6 @@
 package ai.codemaker.jetbrains.file
 
-import ai.codemaker.sdk.client.model.Language
+import ai.codemaker.sdkv2.client.model.Language
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 

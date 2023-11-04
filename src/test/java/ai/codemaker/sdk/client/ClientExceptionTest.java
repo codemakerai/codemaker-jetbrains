@@ -2,7 +2,7 @@
  * Copyright 2023 CodeMaker AI Inc. All rights reserved.
  */
 
-package ai.codemaker.sdk.client;
+package ai.codemaker.sdkv2.client;
 
 
 import org.junit.jupiter.api.Test;
