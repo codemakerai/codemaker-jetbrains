@@ -17,7 +17,7 @@ import ai.codemaker.sdkv2.client.model.PredictResponse;
 import ai.codemaker.sdkv2.client.model.ProcessRequest;
 import ai.codemaker.sdkv2.client.model.ProcessResponse;
 import ai.codemaker.service.Codemakerai;
-import ai.codemaker.service.EdgeServiceGrpc;
+import ai.codemaker.service.CodemakerServiceGrpc;
 import com.google.common.hash.Hashing;
 import com.google.protobuf.ByteString;
 import io.grpc.ClientInterceptors;
@@ -46,7 +46,7 @@ public final class DefaultClient implements Client {
 
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
-    private final EdgeServiceGrpc.EdgeServiceBlockingStub client;
+    private final CodemakerServiceGrpc.CodemakerServiceBlockingStub client;
 
     private final Config config;
 
@@ -60,7 +60,7 @@ public final class DefaultClient implements Client {
 
         this.config = config;
 
-        this.client = EdgeServiceGrpc.newBlockingStub(
+        this.client = CodemakerServiceGrpc.newBlockingStub(
                 ClientInterceptors.intercept(
                         createChannel(config),
                         new AuthenticationInterceptor(apiKeyProvider)
