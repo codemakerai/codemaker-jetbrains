@@ -4,7 +4,6 @@
 
 package ai.codemaker.sdkv2.client;
 
-import ai.codemaker.sdkv2.client.model.Output;
 import ai.codemaker.sdkv2.client.model.CompletionRequest;
 import ai.codemaker.sdkv2.client.model.CompletionResponse;
 import ai.codemaker.sdkv2.client.model.Input;
@@ -12,6 +11,9 @@ import ai.codemaker.sdkv2.client.model.Language;
 import ai.codemaker.sdkv2.client.model.Mode;
 import ai.codemaker.sdkv2.client.model.Modify;
 import ai.codemaker.sdkv2.client.model.Options;
+import ai.codemaker.sdkv2.client.model.Output;
+import ai.codemaker.sdkv2.client.model.PredictRequest;
+import ai.codemaker.sdkv2.client.model.PredictResponse;
 import ai.codemaker.sdkv2.client.model.ProcessRequest;
 import ai.codemaker.sdkv2.client.model.ProcessResponse;
 import ai.codemaker.service.Codemakerai;
@@ -169,9 +171,9 @@ public final class DefaultClient implements Client {
 
     @Override
     public CompletionResponse completion(CompletionRequest request) {
-        final Codemakerai.CompletionRequest processRequest = createCompletionRequest(request);
+        final Codemakerai.CompletionRequest completionRequest = createCompletionRequest(request);
 
-        final Codemakerai.CompletionResponse completionResponse = doCompletion(processRequest);
+        final Codemakerai.CompletionResponse completionResponse = doCompletion(completionRequest);
 
         return createCompletionResponse(completionResponse);
     }
@@ -185,6 +187,15 @@ public final class DefaultClient implements Client {
         return createProcessResponse(processResponse);
     }
 
+    @Override
+    public PredictResponse predict(PredictRequest request) {
+        final Codemakerai.PredictRequest predictRequest = createPredictRequest(request);
+
+        final Codemakerai.PredictResponse predictResponse = doPredict(predictRequest);
+
+        return createPredictResponse(predictResponse);
+    }
+
     private Codemakerai.CompletionRequest createCompletionRequest(CompletionRequest request) {
         final Codemakerai.Input input = createInput(request.getInput());
 
@@ -195,9 +206,9 @@ public final class DefaultClient implements Client {
                 .build();
     }
 
-    private Codemakerai.CompletionResponse doCompletion(Codemakerai.CompletionRequest completionRequest) {
+    private Codemakerai.CompletionResponse doCompletion(Codemakerai.CompletionRequest request) {
         try {
-            return client.completion(completionRequest);
+            return client.completion(request);
         } catch (StatusRuntimeException e) {
             logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
             if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
@@ -207,8 +218,8 @@ public final class DefaultClient implements Client {
         }
     }
 
-    private CompletionResponse createCompletionResponse(Codemakerai.CompletionResponse completionResponse) {
-        final Codemakerai.Source content = completionResponse.getOutput().getSource();
+    private CompletionResponse createCompletionResponse(Codemakerai.CompletionResponse request) {
+        final Codemakerai.Source content = request.getOutput().getSource();
         final String output = decodeOutput(content);
 
         return new CompletionResponse(new Output(output));
@@ -225,9 +236,9 @@ public final class DefaultClient implements Client {
                 .build();
     }
 
-    private Codemakerai.ProcessResponse doProcess(Codemakerai.ProcessRequest processRequest) {
+    private Codemakerai.ProcessResponse doProcess(Codemakerai.ProcessRequest request) {
         try {
-            return client.process(processRequest);
+            return client.process(request);
         } catch (StatusRuntimeException e) {
             logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
             if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
@@ -237,11 +248,36 @@ public final class DefaultClient implements Client {
         }
     }
 
-    private ProcessResponse createProcessResponse(Codemakerai.ProcessResponse processResponse) {
-        final Codemakerai.Source content = processResponse.getOutput().getSource();
+    private ProcessResponse createProcessResponse(Codemakerai.ProcessResponse response) {
+        final Codemakerai.Source content = response.getOutput().getSource();
         final String output = decodeOutput(content);
 
         return new ProcessResponse(new Output(output));
+    }
+
+    private Codemakerai.PredictRequest createPredictRequest(PredictRequest request) {
+        final Codemakerai.Input input = createInput(request.getInput());
+
+        return Codemakerai.PredictRequest.newBuilder()
+                .setLanguage(mapLanguage(request.getLanguage()))
+                .setInput(input)
+                .build();
+    }
+
+    private Codemakerai.PredictResponse doPredict(Codemakerai.PredictRequest request) {
+        try {
+            return client.predict(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private PredictResponse createPredictResponse(Codemakerai.PredictResponse response) {
+        return new PredictResponse();
     }
 
     private Codemakerai.Input createInput(Input request) {

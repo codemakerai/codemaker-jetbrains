@@ -36,7 +36,7 @@ class CodeMakerService(private val project: Project) {
         instance.apiKey
     }
 
-    fun predictiveGenerate(path: VirtualFile?, modify: Modify) {
+    fun predict(path: VirtualFile?, modify: Modify) {
         runInBackground("Predictive generation") {
             try {
                 walkFiles(path) { file: VirtualFile ->
@@ -45,7 +45,7 @@ class CodeMakerService(private val project: Project) {
                     }
 
                     try {
-                        predictiveProcessFile(client, file, Mode.CODE, modify)
+                        predictFile(client, file)
                         return@walkFiles true
                     } catch (e: ProcessCanceledException) {
                         throw e
@@ -128,9 +128,8 @@ class CodeMakerService(private val project: Project) {
     }
 
     @Throws(InterruptedException::class)
-    private fun predictiveProcess(client: Client, mode: Mode, language: Language, source: String, modify: Modify) {
-        // TODO async requests
-        client.process(createProcessRequest(mode, language, source, modify))
+    private fun predictiveProcess(client: Client, language: Language, source: String) {
+        client.predict(createPredictRequest(language, source))
     }
 
     private fun walkFiles(path: VirtualFile?, iterator: ContentIterator) {
@@ -145,12 +144,12 @@ class CodeMakerService(private val project: Project) {
         return file.isDirectory || FileExtensions.isSupported(file.extension)
     }
 
-    private fun predictiveProcessFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify) {
+    private fun predictFile(client: Client, file: VirtualFile) {
         try {
             val source = readFile(file) ?: return
 
             val language = FileExtensions.languageFromExtension(file.extension)
-            predictiveProcess(client, mode, language!!, source, modify)
+            predictiveProcess(client, language!!, source)
         } catch (e: ProcessCanceledException) {
             throw e
         } catch (e: UnauthorizedException) {
@@ -208,6 +207,13 @@ class CodeMakerService(private val project: Project) {
                 language,
                 Input(source),
                 Options(modify, codePath, prompt, true)
+        )
+    }
+
+    private fun createPredictRequest(language: Language, source: String): PredictRequest {
+        return PredictRequest(
+                language,
+                Input(source)
         )
     }
 }
