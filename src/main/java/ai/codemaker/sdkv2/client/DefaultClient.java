@@ -4,7 +4,7 @@
 
 package ai.codemaker.sdkv2.client;
 
-import ai.codemaker.sdk.client.model.Output;
+import ai.codemaker.sdkv2.client.model.Output;
 import ai.codemaker.sdkv2.client.model.CompletionRequest;
 import ai.codemaker.sdkv2.client.model.CompletionResponse;
 import ai.codemaker.sdkv2.client.model.Input;
@@ -21,6 +21,10 @@ import com.google.protobuf.ByteString;
 import io.grpc.ClientInterceptors;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,6 +39,8 @@ import java.util.zip.GZIPOutputStream;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class DefaultClient implements Client {
+
+    private static final Logger logger = LoggerFactory.getLogger(DefaultClient.class);
 
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
@@ -190,7 +196,15 @@ public final class DefaultClient implements Client {
     }
 
     private Codemakerai.CompletionResponse doCompletion(Codemakerai.CompletionRequest completionRequest) {
-        return client.completion(completionRequest);
+        try {
+            return client.completion(completionRequest);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
     }
 
     private CompletionResponse createCompletionResponse(Codemakerai.CompletionResponse completionResponse) {
@@ -212,7 +226,15 @@ public final class DefaultClient implements Client {
     }
 
     private Codemakerai.ProcessResponse doProcess(Codemakerai.ProcessRequest processRequest) {
-        return client.process(processRequest);
+        try {
+            return client.process(processRequest);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
     }
 
     private ProcessResponse createProcessResponse(Codemakerai.ProcessResponse processResponse) {

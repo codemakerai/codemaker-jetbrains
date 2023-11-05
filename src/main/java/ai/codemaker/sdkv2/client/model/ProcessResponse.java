@@ -4,8 +4,6 @@
 
 package ai.codemaker.sdkv2.client.model;
 
-import ai.codemaker.sdk.client.model.Output;
-
 public class ProcessResponse {
 
     private final Output output;
