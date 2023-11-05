@@ -3,6 +3,6 @@
  */
 package ai.codemaker.jetbrains.action
 
-import ai.codemaker.sdk.client.model.Modify
+import ai.codemaker.sdkv2.client.model.Modify
 
 class GenerateDocumentationAction : BaseDocumentationAction(Modify.NONE)

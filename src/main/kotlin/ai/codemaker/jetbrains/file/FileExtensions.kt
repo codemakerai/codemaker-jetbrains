@@ -3,7 +3,7 @@
  */
 package ai.codemaker.jetbrains.file
 
-import ai.codemaker.sdk.client.model.Language
+import ai.codemaker.sdkv2.client.model.Language
 
 class FileExtensions {
 

@@ -5,10 +5,9 @@ package ai.codemaker.jetbrains.service
 
 import ai.codemaker.jetbrains.file.FileExtensions
 import ai.codemaker.jetbrains.settings.AppSettingsState.Companion.instance
-import ai.codemaker.sdk.client.Client
-import ai.codemaker.sdk.client.DefaultClient
-import ai.codemaker.sdk.client.UnauthorizedException
-import ai.codemaker.sdk.client.model.*
+import ai.codemaker.sdkv2.client.Client
+import ai.codemaker.sdkv2.client.DefaultClient
+import ai.codemaker.sdkv2.client.model.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.command.WriteCommandAction
@@ -25,12 +24,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiManager
 import com.intellij.util.ThrowableRunnable
-import java.time.Instant
-import java.time.temporal.ChronoUnit
 import java.util.concurrent.Callable
-import java.util.concurrent.TimeUnit
-
-private const val l = 500
 
 @Service(Service.Level.PROJECT)
 class CodeMakerService(private val project: Project) {
@@ -39,10 +33,6 @@ class CodeMakerService(private val project: Project) {
 
     private val client: Client = DefaultClient {
         instance.apiKey
-    }
-
-    companion object {
-        private val POLLING_DELAY_IN_MILISECONDS = 500L
     }
 
     fun predictiveGenerate(path: VirtualFile?, modify: Modify) {
@@ -132,33 +122,14 @@ class CodeMakerService(private val project: Project) {
 
     @Throws(InterruptedException::class)
     private fun process(client: Client, mode: Mode, language: Language, source: String, modify: Modify, codePath: String?, prompt: String?): String {
-        val processResponse = client.createProcess(createProcessRequest(mode, language, source, modify, codePath, prompt))
-        val timeout = Instant.now().plus(10, ChronoUnit.MINUTES)
-
-        while (timeout.isAfter(Instant.now())) {
-            val status = client.getProcessStatus(
-                    createProcessStatusRequest(processResponse.id)
-            )
-
-            if (isCompleted(status)) {
-                break
-            } else if (isFailed(status)) {
-                throw RuntimeException("Processing task had failed")
-            }
-
-            TimeUnit.MILLISECONDS.sleep(POLLING_DELAY_IN_MILISECONDS)
-            ProgressManager.checkCanceled()
-        }
-
-        val processOutput = client.getProcessOutput(
-                createProcessOutputRequest(processResponse.id)
-        )
-        return processOutput.output.source
+        val response = client.process(createProcessRequest(mode, language, source, modify, codePath, prompt))
+        return response.output.source
     }
 
     @Throws(InterruptedException::class)
     private fun predictiveProcess(client: Client, mode: Mode, language: Language, source: String, modify: Modify) {
-        client.createProcess(createProcessRequest(mode, language, source, modify))
+        // TODO async requests
+        client.process(createProcessRequest(mode, language, source, modify))
     }
 
     private fun walkFiles(path: VirtualFile?, iterator: ContentIterator) {
@@ -181,8 +152,6 @@ class CodeMakerService(private val project: Project) {
             predictiveProcess(client, mode, language!!, source, modify)
         } catch (e: ProcessCanceledException) {
             throw e
-        } catch (e: UnauthorizedException) {
-            logger.error("Unauthorized request. Configure the the API Key in the Preferences > Tools > CodeMaker AI menu.", e)
         } catch (e: Exception) {
             logger.error("Failed to process file.", e)
         }
@@ -198,8 +167,6 @@ class CodeMakerService(private val project: Project) {
             writeFile(file, output)
         } catch (e: ProcessCanceledException) {
             throw e
-        } catch (e: UnauthorizedException) {
-            logger.error("Unauthorized request. Configure the the API Key in the Preferences > Tools > CodeMaker AI menu.", e)
         } catch (e: Exception) {
             logger.error("Failed to process file.", e)
         }
@@ -228,31 +195,12 @@ class CodeMakerService(private val project: Project) {
         }
     }
 
-    private fun isCompleted(status: GetProcessStatusResponse): Boolean {
-        return status.status == Status.COMPLETED
-    }
-
-    private fun isFailed(status: GetProcessStatusResponse): Boolean {
-        return status.status == Status.FAILED
-                || status.status == Status.TIMED_OUT
-    }
-
-    private fun createProcessRequest(mode: Mode, language: Language, source: String, modify: Modify, codePath: String? = null, prompt: String? = null): CreateProcessRequest {
-        return CreateProcessRequest(
-                Process(
-                        mode,
-                        language,
-                        Input(source),
-                        Options(modify, codePath, prompt, true)
-                )
+    private fun createProcessRequest(mode: Mode, language: Language, source: String, modify: Modify, codePath: String? = null, prompt: String? = null): ProcessRequest {
+        return ProcessRequest(
+                mode,
+                language,
+                Input(source),
+                Options(modify, codePath, prompt, true)
         )
-    }
-
-    private fun createProcessStatusRequest(id: String): GetProcessStatusRequest {
-        return GetProcessStatusRequest(id)
-    }
-
-    private fun createProcessOutputRequest(id: String): GetProcessOutputRequest {
-        return GetProcessOutputRequest(id)
     }
 }

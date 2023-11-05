@@ -5,7 +5,7 @@
 package ai.codemaker.jetbrains.action
 
 import ai.codemaker.jetbrains.service.CodeMakerService
-import ai.codemaker.sdk.client.model.Modify
+import ai.codemaker.sdkv2.client.model.Modify
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -23,16 +23,11 @@ class FixSyntaxAction : AnAction() {
         if (editor != null) {
             val documentManager = PsiDocumentManager.getInstance(project)
             val psiFile = documentManager.getPsiFile(editor.document) ?: return
-            val codePath = getCodePath(psiFile, editor.caretModel.offset)
             documentManager.commitDocument(editor.document)
-            service.fixSyntax(psiFile.virtualFile, Modify.REPLACE, codePath)
+            service.fixSyntax(psiFile.virtualFile, Modify.REPLACE)
         } else {
             val file = e.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
             service.fixSyntax(file, Modify.REPLACE)
         }
-    }
-
-    open fun getCodePath(psiFile: PsiFile, offset: Int): String? {
-        return null
     }
 }
