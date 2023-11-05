@@ -38,7 +38,7 @@ class Predictor(private val project: Project) {
             return
         }
 
-        codeMakerService.predict(file, Modify.NONE)
+        codeMakerService.predict(file)
     }
 
     fun delete(file: VirtualFile) {

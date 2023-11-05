@@ -36,7 +36,7 @@ class CodeMakerService(private val project: Project) {
         instance.apiKey
     }
 
-    fun predict(path: VirtualFile?, modify: Modify) {
+    fun predict(path: VirtualFile?) {
         runInBackground("Predictive generation") {
             try {
                 walkFiles(path) { file: VirtualFile ->
