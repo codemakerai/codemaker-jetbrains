@@ -4,6 +4,7 @@ package ai.codemaker.service;
 service EdgeService {
   rpc Completion (CompletionRequest) returns (CompletionResponse);
   rpc Process (ProcessRequest) returns (ProcessResponse);
+  rpc Predict (PredictRequest) returns (PredictResponse);
 }
 
 enum Mode {
@@ -78,4 +79,13 @@ message CompletionRequest {
 
 message CompletionResponse {
   Output output = 1;
+}
+
+message PredictRequest {
+  Language language = 1;
+  Input input = 2;
+}
+
+message PredictResponse {
+
 }
