@@ -22,6 +22,15 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
 
+    implementation("io.grpc:grpc-protobuf:1.59.0")
+    implementation("io.grpc:grpc-services:1.59.0")
+    implementation("io.grpc:grpc-stub:1.59.0")
+
+    implementation("com.google.protobuf:protobuf-java-util:3.24.0")
+    implementation("com.google.protobuf:protobuf-java:3.24.0")
+
+    runtimeOnly("io.grpc:grpc-netty-shaded:1.59.0")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
     testImplementation("org.mock-server:mockserver-junit-jupiter:5.15.0")
@@ -70,7 +79,7 @@ tasks {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.8.0"
+        artifact = "com.google.protobuf:protoc:3.24.0"
     }
     plugins {
         id("grpc") {
