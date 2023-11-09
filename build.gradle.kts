@@ -19,9 +19,6 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
-    implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
-
     implementation("io.grpc:grpc-protobuf:1.59.0")
     implementation("io.grpc:grpc-services:1.59.0")
     implementation("io.grpc:grpc-stub:1.59.0")
