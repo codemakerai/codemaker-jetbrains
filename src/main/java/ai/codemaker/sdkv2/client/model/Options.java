@@ -13,11 +13,14 @@ public class Options {
 
     private final boolean detectSyntaxErrors;
 
-    public Options(Modify modify, String codePath, String prompt, boolean detectSyntaxErrors) {
+    private final String contextId;
+
+    public Options(Modify modify, String codePath, String prompt, boolean detectSyntaxErrors, String contextId) {
         this.modify = modify;
         this.codePath = codePath;
         this.prompt = prompt;
         this.detectSyntaxErrors = detectSyntaxErrors;
+        this.contextId = contextId;
     }
 
     public Modify getModify() {
@@ -34,5 +37,9 @@ public class Options {
 
     public boolean isDetectSyntaxErrors() {
         return detectSyntaxErrors;
+    }
+
+    public String getContextId() {
+        return contextId;
     }
 }

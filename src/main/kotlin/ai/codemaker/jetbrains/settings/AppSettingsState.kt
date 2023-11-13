@@ -22,6 +22,9 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     var predictiveGenerationEnabled: Boolean = false
 
     @JvmField
+    var extendedSourceContextEnabled: Boolean = false
+
+    @JvmField
     var syntaxAutocorrectionEnabled: Boolean = false
 
     override fun getState(): AppSettingsState {
