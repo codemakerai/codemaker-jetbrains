@@ -4,6 +4,7 @@
 package ai.codemaker.jetbrains.service
 
 import ai.codemaker.jetbrains.file.FileExtensions
+import ai.codemaker.jetbrains.settings.AppSettingsState
 import ai.codemaker.jetbrains.settings.AppSettingsState.Companion.instance
 import ai.codemaker.sdkv2.client.Client
 import ai.codemaker.sdkv2.client.DefaultClient
@@ -185,7 +186,7 @@ class CodeMakerService(private val project: Project) {
 
     private fun discoverContext(client: Client, mode: Mode, language: Language, source: String, path: String): String? {
         try {
-            if (!isExtendedContextSupported(mode)) {
+            if (!AppSettingsState.instance.extendedSourceContextEnabled || !isExtendedContextSupported(mode)) {
                 return null
             }
 
