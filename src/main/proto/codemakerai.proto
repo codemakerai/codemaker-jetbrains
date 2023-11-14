@@ -5,6 +5,9 @@ service CodemakerService {
   rpc Completion (CompletionRequest) returns (CompletionResponse);
   rpc Process (ProcessRequest) returns (ProcessResponse);
   rpc Predict (PredictRequest) returns (PredictResponse);
+  rpc DiscoverContext (DiscoverSourceContextRequest) returns (DiscoverSourceContextResponse);
+  rpc CreateContext (CreateSourceContextRequest) returns (CreateSourceContextResponse);
+  rpc RegisterContext (RegisterSourceContextRequest) returns (RegisterSourceContextResponse);
 }
 
 enum Mode {
@@ -49,11 +52,26 @@ message Output {
   Source source = 1;
 }
 
+message Metadata {
+  string path = 1;
+}
+
+message SourceContext {
+  Language language = 1;
+  Input input = 2;
+  Metadata metadata = 3;
+}
+
+message RequiredSourceContext {
+  string path = 1;
+}
+
 message ProcessOptions {
   Modify modify = 1;
   string codePath = 2;
   string prompt = 3;
   bool detectSyntaxErrors = 4;
+  string contextId = 5;
 }
 
 message CompletionOptions {
@@ -87,5 +105,30 @@ message PredictRequest {
 }
 
 message PredictResponse {
+
+}
+
+message DiscoverSourceContextRequest {
+  SourceContext context = 1;
+}
+
+message DiscoverSourceContextResponse {
+  repeated RequiredSourceContext contexts = 1;
+}
+
+message CreateSourceContextRequest {
+
+}
+
+message CreateSourceContextResponse {
+  string id = 1;
+}
+
+message RegisterSourceContextRequest {
+  string id = 1;
+  repeated SourceContext sourceContexts = 2;
+}
+
+message RegisterSourceContextResponse {
 
 }

@@ -6,6 +6,10 @@ package ai.codemaker.sdkv2.client;
 
 import ai.codemaker.sdkv2.client.model.CompletionRequest;
 import ai.codemaker.sdkv2.client.model.CompletionResponse;
+import ai.codemaker.sdkv2.client.model.CreateContextRequest;
+import ai.codemaker.sdkv2.client.model.CreateContextResponse;
+import ai.codemaker.sdkv2.client.model.DiscoverContextRequest;
+import ai.codemaker.sdkv2.client.model.DiscoverContextResponse;
 import ai.codemaker.sdkv2.client.model.Input;
 import ai.codemaker.sdkv2.client.model.Language;
 import ai.codemaker.sdkv2.client.model.Mode;
@@ -16,8 +20,11 @@ import ai.codemaker.sdkv2.client.model.PredictRequest;
 import ai.codemaker.sdkv2.client.model.PredictResponse;
 import ai.codemaker.sdkv2.client.model.ProcessRequest;
 import ai.codemaker.sdkv2.client.model.ProcessResponse;
-import ai.codemaker.service.Codemakerai;
+import ai.codemaker.sdkv2.client.model.RegisterContextRequest;
+import ai.codemaker.sdkv2.client.model.RegisterContextResponse;
+import ai.codemaker.sdkv2.client.model.RequiredContext;
 import ai.codemaker.service.CodemakerServiceGrpc;
+import ai.codemaker.service.Codemakerai;
 import com.google.common.hash.Hashing;
 import com.google.protobuf.ByteString;
 import io.grpc.ClientInterceptors;
@@ -34,7 +41,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -75,10 +86,12 @@ public final class DefaultClient implements Client {
         final Optional<Modify> modify = Optional.ofNullable(options.getModify());
         final Optional<String> codePath = Optional.ofNullable(options.getCodePath());
         final Optional<String> prompt = Optional.ofNullable(options.getPrompt());
+        final Optional<String> contextId = Optional.ofNullable(options.getContextId());
 
         modify.ifPresent(value -> builder.setModify(mapModify(value)));
         codePath.ifPresent(builder::setCodePath);
         prompt.ifPresent(builder::setPrompt);
+        contextId.ifPresent(builder::setContextId);
 
         builder.setDetectSyntaxErrors(options.isDetectSyntaxErrors());
 
@@ -194,6 +207,122 @@ public final class DefaultClient implements Client {
         final Codemakerai.PredictResponse predictResponse = doPredict(predictRequest);
 
         return createPredictResponse(predictResponse);
+    }
+
+    @Override
+    public DiscoverContextResponse discoverContext(DiscoverContextRequest request) {
+        final Codemakerai.DiscoverSourceContextRequest discoverContextRequest = createDiscoverContextRequest(request);
+
+        final Codemakerai.DiscoverSourceContextResponse discoverContextResponse = doDiscoverContext(discoverContextRequest);
+
+        return createDiscoverContextResponse(discoverContextResponse);
+    }
+
+    private Codemakerai.DiscoverSourceContextRequest createDiscoverContextRequest(DiscoverContextRequest request) {
+        final Codemakerai.Input input = createInput(request.getContext().getInput());
+
+        return Codemakerai.DiscoverSourceContextRequest.newBuilder()
+                .setContext(Codemakerai.SourceContext.newBuilder()
+                        .setLanguage(mapLanguage(request.getContext().getLanguage()))
+                        .setInput(input)
+                        .setMetadata(Codemakerai.Metadata.newBuilder()
+                                .setPath(request.getContext().getPath())
+                                .build())
+                        .build())
+                .build();
+    }
+
+    private Codemakerai.DiscoverSourceContextResponse doDiscoverContext(Codemakerai.DiscoverSourceContextRequest request) {
+        try {
+            return client.discoverContext(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private DiscoverContextResponse createDiscoverContextResponse(Codemakerai.DiscoverSourceContextResponse response) {
+        final Collection<RequiredContext> requiredContexts = response.getContextsList().stream()
+                .map(this::mapRequiredContext)
+                .collect(Collectors.toList());
+        return new DiscoverContextResponse(requiredContexts);
+    }
+
+    @Override
+    public CreateContextResponse createContext(CreateContextRequest request) {
+        final Codemakerai.CreateSourceContextRequest createContextRequest = createCreateContextRequest(request);
+
+        final Codemakerai.CreateSourceContextResponse createContextResponse = doCreateContext(createContextRequest);
+
+        return createCreateContextResponse(createContextResponse);
+    }
+
+    private Codemakerai.CreateSourceContextRequest createCreateContextRequest(CreateContextRequest request) {
+        return Codemakerai.CreateSourceContextRequest.newBuilder().build();
+    }
+
+    private Codemakerai.CreateSourceContextResponse doCreateContext(Codemakerai.CreateSourceContextRequest request) {
+        try {
+            return client.createContext(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private CreateContextResponse createCreateContextResponse(Codemakerai.CreateSourceContextResponse response) {
+        return new CreateContextResponse(response.getId());
+    }
+
+    @Override
+    public RegisterContextResponse registerContext(RegisterContextRequest request) {
+        final Codemakerai.RegisterSourceContextRequest registerContextRequest = createRegisterContextRequest(request);
+
+        final Codemakerai.RegisterSourceContextResponse registerContextResponse = doRegisterContext(registerContextRequest);
+
+        return createRegisterContextResponse(registerContextResponse);
+    }
+
+    private Codemakerai.RegisterSourceContextRequest createRegisterContextRequest(RegisterContextRequest request) {
+        final List<Codemakerai.SourceContext> sourceContexts = request.getContexts().stream()
+                .map(context -> {
+                            final Codemakerai.Input input = createInput(context.getInput());
+                            return Codemakerai.SourceContext.newBuilder()
+                                    .setLanguage(mapLanguage(context.getLanguage()))
+                                    .setInput(input)
+                                    .setMetadata(Codemakerai.Metadata.newBuilder()
+                                            .setPath(context.getPath())
+                                            .build())
+                                    .build();
+                        }
+                )
+                .toList();
+        return Codemakerai.RegisterSourceContextRequest.newBuilder()
+                .setId(request.getId())
+                .addAllSourceContexts(sourceContexts)
+                .build();
+    }
+
+    private Codemakerai.RegisterSourceContextResponse doRegisterContext(Codemakerai.RegisterSourceContextRequest request) {
+        try {
+            return client.registerContext(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private RegisterContextResponse createRegisterContextResponse(Codemakerai.RegisterSourceContextResponse response) {
+        return new RegisterContextResponse();
     }
 
     private Codemakerai.CompletionRequest createCompletionRequest(CompletionRequest request) {
@@ -314,5 +443,9 @@ public final class DefaultClient implements Client {
                 .setContent(ByteString.copyFrom(content))
                 .setEncoding(encoding)
                 .setChecksum(checksum);
+    }
+
+    private RequiredContext mapRequiredContext(Codemakerai.RequiredSourceContext requiredContext) {
+        return new RequiredContext(requiredContext.getPath());
     }
 }

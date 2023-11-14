@@ -28,6 +28,7 @@ class AppSettingsConfigurable : Configurable {
         return settingsComponent!!.apiKey != settings.apiKey
                 || settingsComponent!!.codeActionsEnabled != settings.codeActionsEnabled
                 || settingsComponent!!.predictiveGenerationEnabled != settings.predictiveGenerationEnabled
+                || settingsComponent!!.extendedSourceContextEnabled != settings.extendedSourceContextEnabled
                 || settingsComponent!!.syntaxAutocorrectionEnabled != settings.syntaxAutocorrectionEnabled
     }
 
@@ -36,6 +37,7 @@ class AppSettingsConfigurable : Configurable {
         settings.apiKey = settingsComponent!!.apiKey
         settings.codeActionsEnabled = settingsComponent!!.codeActionsEnabled
         settings.predictiveGenerationEnabled = settingsComponent!!.predictiveGenerationEnabled
+        settings.extendedSourceContextEnabled = settingsComponent!!.extendedSourceContextEnabled
         settings.syntaxAutocorrectionEnabled = settingsComponent!!.syntaxAutocorrectionEnabled
     }
 
@@ -44,6 +46,7 @@ class AppSettingsConfigurable : Configurable {
         settingsComponent!!.apiKey = settings.apiKey
         settingsComponent!!.codeActionsEnabled = settings.codeActionsEnabled
         settingsComponent!!.predictiveGenerationEnabled = settings.predictiveGenerationEnabled
+        settingsComponent!!.extendedSourceContextEnabled = settings.extendedSourceContextEnabled
         settingsComponent!!.syntaxAutocorrectionEnabled = settings.syntaxAutocorrectionEnabled
     }
 }

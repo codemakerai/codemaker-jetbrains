@@ -22,9 +22,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ContentIterator
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiManager
 import com.intellij.util.ThrowableRunnable
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util.concurrent.Callable
 
 @Service(Service.Level.PROJECT)
@@ -34,6 +37,26 @@ class CodeMakerService(private val project: Project) {
 
     private val client: Client = DefaultClient {
         instance.apiKey
+    }
+
+    fun generateCode(path: VirtualFile?, modify: Modify, codePath: String? = null) {
+        process(Mode.CODE, "Generating code", path, modify, codePath)
+    }
+
+    fun generateInlineCode(path: VirtualFile?, modify: Modify, codePath: String? = null) {
+        process(Mode.INLINE_CODE, "Generating inline code", path, modify, codePath)
+    }
+
+    fun editCode(path: VirtualFile?, modify: Modify, codePath: String, prompt: String) {
+        process(Mode.EDIT_CODE, "Editing code", path, modify, codePath, prompt)
+    }
+
+    fun generateDocumentation(path: VirtualFile?, modify: Modify, codePath: String? = null) {
+        process(Mode.DOCUMENT, "Generating documentation", path, modify, codePath)
+    }
+
+    fun fixSyntax(path: VirtualFile?, modify: Modify, codePath: String? = null) {
+        process(Mode.FIX_SYNTAX, "Fixing code", path, modify, codePath)
     }
 
     fun predict(path: VirtualFile?) {
@@ -60,26 +83,6 @@ class CodeMakerService(private val project: Project) {
                 logger.error("Failed to generate code in file.", e)
             }
         }
-    }
-
-    fun generateCode(path: VirtualFile?, modify: Modify, codePath: String? = null) {
-        process(Mode.CODE, "Generating code", path, modify, codePath)
-    }
-
-    fun generateInlineCode(path: VirtualFile?, modify: Modify, codePath: String? = null) {
-        process(Mode.INLINE_CODE, "Generating inline code", path, modify, codePath)
-    }
-
-    fun editCode(path: VirtualFile?, modify: Modify, codePath: String, prompt: String) {
-        process(Mode.EDIT_CODE, "Editing code", path, modify, codePath, prompt)
-    }
-
-    fun generateDocumentation(path: VirtualFile?, modify: Modify, codePath: String? = null) {
-        process(Mode.DOCUMENT, "Generating documentation", path, modify, codePath)
-    }
-
-    fun fixSyntax(path: VirtualFile?, modify: Modify, codePath: String? = null) {
-        process(Mode.FIX_SYNTAX, "Fixing code", path, modify, codePath)
     }
 
     private fun process(mode: Mode, title: String, path: VirtualFile?, modify: Modify, codePath: String?, prompt: String? = null) {
@@ -122,8 +125,8 @@ class CodeMakerService(private val project: Project) {
     }
 
     @Throws(InterruptedException::class)
-    private fun process(client: Client, mode: Mode, language: Language, source: String, modify: Modify, codePath: String?, prompt: String?): String {
-        val response = client.process(createProcessRequest(mode, language, source, modify, codePath, prompt))
+    private fun process(client: Client, mode: Mode, language: Language, source: String, modify: Modify, codePath: String?, prompt: String?, contextId: String?): String {
+        val response = client.process(createProcessRequest(mode, language, source, modify, codePath, prompt, contextId))
         return response.output.source
     }
 
@@ -147,8 +150,8 @@ class CodeMakerService(private val project: Project) {
     private fun predictFile(client: Client, file: VirtualFile) {
         try {
             val source = readFile(file) ?: return
-
             val language = FileExtensions.languageFromExtension(file.extension)
+
             predictiveProcess(client, language!!, source)
         } catch (e: ProcessCanceledException) {
             throw e
@@ -163,9 +166,11 @@ class CodeMakerService(private val project: Project) {
     private fun processFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify, codePath: String? = null, prompt: String? = null) {
         try {
             val source = readFile(file) ?: return
-
             val language = FileExtensions.languageFromExtension(file.extension)
-            val output = process(client, mode, language!!, source, modify, codePath, prompt)
+
+            val contextId = discoverContext(client, mode, language!!, source, file.path)
+
+            val output = process(client, mode, language!!, source, modify, codePath, prompt, contextId)
 
             writeFile(file, output)
         } catch (e: ProcessCanceledException) {
@@ -175,6 +180,41 @@ class CodeMakerService(private val project: Project) {
             throw e
         } catch (e: Exception) {
             logger.error("Failed to process file.", e)
+        }
+    }
+
+    private fun discoverContext(client: Client, mode: Mode, language: Language, source: String, path: String): String? {
+        try {
+            if (!isExtendedContextSupported(mode)) {
+                return null
+            }
+
+            val discoverContextResponse = client.discoverContext(DiscoverContextRequest(Context(language, Input(source), path)))
+
+            val paths = discoverContextResponse.requiredContexts.map {
+                Path.of(path).parent.resolve(it.path).normalize()
+            }
+
+            val createContextResponse = client.createContext(CreateContextRequest())
+            val contextId = createContextResponse.id
+
+            val sourceContexts = paths.filter {
+                Files.exists(it)
+            }.map {
+                val file = VirtualFileManager.getInstance().findFileByNioPath(it) ?: return null
+                val contextSource = readFile(file) ?: return null
+                Context(
+                        language,
+                        Input(contextSource),
+                        it.toString(),
+                )
+            }.filterNotNull()
+
+            client.registerContext(RegisterContextRequest(contextId, sourceContexts))
+            return contextId
+        } catch (e: Exception) {
+            logger.warn("Failed to process file context.", e)
+            return null
         }
     }
 
@@ -201,12 +241,12 @@ class CodeMakerService(private val project: Project) {
         }
     }
 
-    private fun createProcessRequest(mode: Mode, language: Language, source: String, modify: Modify, codePath: String? = null, prompt: String? = null): ProcessRequest {
+    private fun createProcessRequest(mode: Mode, language: Language, source: String, modify: Modify, codePath: String? = null, prompt: String? = null, contextId: String? = null): ProcessRequest {
         return ProcessRequest(
                 mode,
                 language,
                 Input(source),
-                Options(modify, codePath, prompt, true)
+                Options(modify, codePath, prompt, true, contextId)
         )
     }
 
@@ -215,5 +255,11 @@ class CodeMakerService(private val project: Project) {
                 language,
                 Input(source)
         )
+    }
+
+    private fun isExtendedContextSupported(mode: Mode): Boolean {
+        return mode == Mode.CODE
+                || mode == Mode.EDIT_CODE
+                || mode == Mode.INLINE_CODE
     }
 }
