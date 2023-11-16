@@ -132,8 +132,8 @@ class CodeMakerService(private val project: Project) {
     }
 
     @Throws(InterruptedException::class)
-    private fun predictiveProcess(client: Client, language: Language, source: String) {
-        client.predict(createPredictRequest(language, source))
+    private fun predictiveProcess(client: Client, language: Language, source: String, contextId: String?) {
+        client.predict(createPredictRequest(language, source, contextId))
     }
 
     private fun walkFiles(path: VirtualFile?, iterator: ContentIterator) {
@@ -153,7 +153,9 @@ class CodeMakerService(private val project: Project) {
             val source = readFile(file) ?: return
             val language = FileExtensions.languageFromExtension(file.extension)
 
-            predictiveProcess(client, language!!, source)
+            val contextId = discoverContext(client, language!!, source, file.path)
+
+            predictiveProcess(client, language!!, source, contextId)
         } catch (e: ProcessCanceledException) {
             throw e
         } catch (e: UnauthorizedException) {
@@ -185,8 +187,16 @@ class CodeMakerService(private val project: Project) {
     }
 
     private fun discoverContext(client: Client, mode: Mode, language: Language, source: String, path: String): String? {
+        if (!isExtendedContextSupported(mode)) {
+            return null
+        }
+
+        return discoverContext(client, language, source, path)
+    }
+
+    private fun discoverContext(client: Client, language: Language, source: String, path: String): String? {
         try {
-            if (!AppSettingsState.instance.extendedSourceContextEnabled || !isExtendedContextSupported(mode)) {
+            if (!AppSettingsState.instance.extendedSourceContextEnabled) {
                 return null
             }
 
@@ -251,10 +261,11 @@ class CodeMakerService(private val project: Project) {
         )
     }
 
-    private fun createPredictRequest(language: Language, source: String): PredictRequest {
+    private fun createPredictRequest(language: Language, source: String, contextId: String?): PredictRequest {
         return PredictRequest(
                 language,
-                Input(source)
+                Input(source),
+                Options(null, null, null, false, contextId)
         )
     }
 

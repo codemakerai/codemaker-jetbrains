@@ -78,6 +78,10 @@ message CompletionOptions {
 
 }
 
+message PredictionOptions {
+  string contextId = 1;
+}
+
 message ProcessRequest {
   Mode mode = 1;
   Language language = 2;
@@ -102,6 +106,7 @@ message CompletionResponse {
 message PredictRequest {
   Language language = 1;
   Input input = 2;
+  PredictionOptions options = 3;
 }
 
 message PredictResponse {
