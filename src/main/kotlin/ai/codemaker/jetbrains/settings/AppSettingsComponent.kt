@@ -29,7 +29,7 @@ class AppSettingsComponent {
     }
 
     var apiKey: String?
-        get() = apiKeyText.text
+        get() = apiKeyText.text.trim()
         set(apiKey) {
             apiKeyText.text = apiKey
         }
