@@ -33,7 +33,7 @@ class ReplaceMethodCodeAction : BaseCodeAction(Modify.REPLACE) {
     }
 
     override fun getCodePath(psiFile: PsiFile, offset: Int): String? {
-        val element = PsiUtils.getMethod(psiFile, offset) ?: return null
-        return element.codePath
+        PsiUtils.getMethod(psiFile, offset) ?: return null
+        return "@$offset"
     }
 }

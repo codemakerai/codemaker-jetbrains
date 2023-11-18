@@ -16,8 +16,8 @@ import com.intellij.psi.PsiFile
 class ReplaceDocumentationQuickFix : BaseGenerationQuickFix("Replace documentation") {
 
     override fun getCodePath(file: PsiFile, offset: Int): String? {
-        val method = PsiUtils.getMethod(file, offset) ?: return null
-        return method.codePath
+        PsiUtils.getMethod(file, offset) ?: return null
+        return "@$offset"
     }
 
     override fun doInvoke(project: Project, editor: Editor, service: CodeMakerService, file: VirtualFile, codePath: String?) {

@@ -18,7 +18,7 @@ import javax.swing.JTextField
 
 class EditCodeQuickFix : BaseGenerationQuickFix("Edit code with prompt") {
     override fun getCodePath(file: PsiFile, offset: Int): String? {
-        return "@${offset}"
+        return "@$offset"
     }
 
     override fun doInvoke(project: Project, editor: Editor, service: CodeMakerService, file: VirtualFile, codePath: String?) {
