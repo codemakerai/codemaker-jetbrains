@@ -3,13 +3,18 @@ package ai.codemaker.jetbrains.inline.listener
 import ai.codemaker.jetbrains.inline.render.CodemakerAutocompleteBlockElementRenderer
 import ai.codemaker.jetbrains.inline.render.CodemakerAutocompleteSingleLineRenderer
 import ai.codemaker.jetbrains.inline.util.InlayUtil
+import ai.codemaker.jetbrains.service.CodeMakerService
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.*
 import com.intellij.openapi.wm.IdeFocusManager
+import com.intellij.psi.PsiDocumentManager
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class CodemakerEditorFactoryListener : EditorFactoryListener {
 
@@ -47,6 +52,8 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
 
     private inner class CodemakerDocumentListener : BulkAwareDocumentListener {
 
+        private val logger = Logger.getInstance(CodemakerDocumentListener::class.java)
+
         override fun documentChangedNonBulk(event: DocumentEvent) {
             getActiveEditor(event.document)?.let { editor ->
                 val newFragment = event.newFragment.toString()
@@ -59,7 +66,26 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
                     return
                 }
                 val changeOffset = event.offset + event.newLength
-                displayAutoComplete(editor, changeOffset, InlayUtil.complete())
+
+                val project = editor.project ?: return
+                val service: CodeMakerService = project.getService(CodeMakerService::class.java)
+                val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(event.document)
+                val virtualFile = psiFile?.virtualFile ?: return
+
+                // TODO: Add logics to check if auto complete should be triggered like:
+                // 1. If the file is supported
+                // 2. If the cursor is not in the middle of a line
+
+                // TODO: Add cancellation token(debounce) like vscode extension, if user types too fast, cancel the previous request
+                // Using Coroutines to avoid blocking the UI thread
+                GlobalScope.launch {
+                    // TODO: response is always empty, need to fix
+                    val completion = service.complete(virtualFile, event.offset, InlayUtil.complete())
+                    logger.info("completion: $completion")
+                    ApplicationManager.getApplication().invokeLater {
+                        displayAutoComplete(editor, changeOffset, completion)
+                    }
+                }
             }
         }
 
