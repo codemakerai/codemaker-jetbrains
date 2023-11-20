@@ -35,6 +35,9 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
         }
     }
 
+    /**
+     * Clear all autocomplete inlays when cursor moves
+     */
     private inner class CodemakerCaretListener : CaretListener {
 
         override fun caretPositionChanged(event: CaretEvent) {
@@ -45,11 +48,15 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
             }
         }
 
+        // Typing a character will trigger CaretEvent, we don't want to clear inlays in this case, because what user types might be matched with the completion
         private fun isSingleOffsetChange(event: CaretEvent): Boolean =
                 event.oldPosition.line == event.newPosition.line &&
                         event.oldPosition.column + 1 == event.newPosition.column
     }
 
+    /**
+     * Display autocomplete inlays when user types
+     */
     private inner class CodemakerDocumentListener : BulkAwareDocumentListener {
 
         private val logger = Logger.getInstance(CodemakerDocumentListener::class.java)
@@ -60,6 +67,7 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
                 val currentTextInlay = InlayUtil.getInlayTextAtCaret(editor)
 
                 InlayUtil.clearAllAutocompleteInlays(editor)
+                // If what user types is matched with the completion, update the completion with remaining text
                 if (newFragment.isNotEmpty() && currentTextInlay?.startsWith(newFragment) == true) {
                     val newCompletion = currentTextInlay.substring(newFragment.length)
                     displayAutoComplete(editor, event.offset + event.newLength, newCompletion)
@@ -101,6 +109,11 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
             return if (activeEditor?.document == document) activeEditor else null
         }
 
+        /**
+         * For multi-line suggestion, due to the way the editor paint the inlay, we need to use one single line inlay and one block inlay.
+         * The single line inlay will be displayed first with the first line of the completion.
+         * The block inlay will be displayed after the single line inlay with the rest of the completion.
+         */
         private fun displayAutoComplete(editor: Editor, offset: Int, suggestion: String) {
             InlayUtil.clearAllAutocompleteInlays(editor)
 

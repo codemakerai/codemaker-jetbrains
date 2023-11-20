@@ -11,6 +11,10 @@ import kotlin.random.Random
 class InlayUtil {
 
     companion object {
+
+        /**
+         * Get all autocomplete inlays in the editor.
+         */
         fun getAllAutocompleteInlays(editor: Editor): List<Inlay<*>> {
             with(editor.inlayModel) {
                 return listOf(
@@ -21,6 +25,11 @@ class InlayUtil {
             }
         }
 
+        /**
+         * Get the text of the inlay at the caret position.
+         * We suppose there are at most one inline inlay and one block inlay at the caret position.
+         * If it's a multi-line inlay, we return the text of the inline inlay and the block inlay.
+         */
         fun getInlayTextAtCaret(editor: Editor): String? {
             val inlineText = editor.inlayModel.getInlineElementsInRange(maxOf(0, editor.caretModel.offset - 1), editor.caretModel.offset + 1)
                     .firstOrNull { it.renderer is CodemakerAutocompleteSingleLineRenderer }
