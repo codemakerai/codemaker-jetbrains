@@ -1,5 +1,6 @@
 package ai.codemaker.jetbrains.inline.listener
 
+import ai.codemaker.jetbrains.file.FileExtensions
 import ai.codemaker.jetbrains.inline.render.CodemakerAutocompleteBlockElementRenderer
 import ai.codemaker.jetbrains.inline.render.CodemakerAutocompleteSingleLineRenderer
 import ai.codemaker.jetbrains.inline.util.InlayUtil
@@ -85,16 +86,18 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
                 val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(event.document)
                 val virtualFile = psiFile?.virtualFile ?: return
 
-                // TODO: Add logics to check if auto complete should be triggered like:
-                // 1. If the file is supported
-                // 2. If the cursor is not in the middle of a line
+                if (!FileExtensions.isSupported(virtualFile.extension)) {
+                    return
+                }
+
+                // TODO: Add logic to check if auto complete should be triggered like:
+                // 1. If the cursor is not in the middle of a line
 
                 val multilineAutocompletionEnabled = AppSettingsState.instance.multilineAutocompletionEnabled
 
                 // TODO: Add cancellation token(debounce) like vscode extension, if user types too fast, cancel the previous request
                 // Using Coroutines to avoid blocking the UI thread
                 GlobalScope.launch {
-                    // TODO: response is always empty, need to fix
                     val completion = service.completion(virtualFile, event.offset, multilineAutocompletionEnabled)
                     logger.info("completion: $completion")
                     ApplicationManager.getApplication().invokeLater {
