@@ -19,6 +19,12 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     var codeActionsEnabled: Boolean = true
 
     @JvmField
+    var autocompletionEnabled: Boolean = false
+
+    @JvmField
+    var multilineAutocompletionEnabled: Boolean = false
+
+    @JvmField
     var predictiveGenerationEnabled: Boolean = false
 
     @JvmField

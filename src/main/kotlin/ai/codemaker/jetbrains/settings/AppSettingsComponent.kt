@@ -13,6 +13,8 @@ class AppSettingsComponent {
     val panel: JPanel
     private val apiKeyText = JBTextField()
     private val codeActionsEnabledCheck = JBCheckBox()
+    private val autocompletionEnabledCheck = JBCheckBox()
+    private val multilineAutocompletionEnabledCheck = JBCheckBox()
     private val predictiveGenerationEnabledCheck = JBCheckBox()
     private val extendedSourceContextEnabledCheck = JBCheckBox()
     private val syntaxAutocorrectionEnabledCheck = JBCheckBox()
@@ -21,6 +23,8 @@ class AppSettingsComponent {
         panel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(JBLabel("API Key: "), apiKeyText, 1, false)
                 .addLabeledComponent(JBLabel("Enable code actions: "), codeActionsEnabledCheck, 1, false)
+                .addLabeledComponent(JBLabel("Enable autocompletion: "), autocompletionEnabledCheck, 1, false)
+                .addLabeledComponent(JBLabel("Enable multiline autocompletion: "), multilineAutocompletionEnabledCheck, 1, false)
                 .addLabeledComponent(JBLabel("Enable predictive generation: "), predictiveGenerationEnabledCheck, 1, false)
                 .addLabeledComponent(JBLabel("Enable extended source context: "), extendedSourceContextEnabledCheck, 1, false)
                 .addLabeledComponent(JBLabel("Enable syntax autocorrection: "), syntaxAutocorrectionEnabledCheck, 1, false)
@@ -38,6 +42,18 @@ class AppSettingsComponent {
         get() = codeActionsEnabledCheck.isSelected
         set(enabled) {
             codeActionsEnabledCheck.isSelected = enabled
+        }
+
+    var autocompletionEnabled: Boolean
+        get() = autocompletionEnabledCheck.isSelected
+        set(enabled) {
+            autocompletionEnabledCheck.isSelected = enabled
+        }
+
+    var multilineAutocompletionEnabled: Boolean
+        get() = multilineAutocompletionEnabledCheck.isSelected
+        set(enabled) {
+            multilineAutocompletionEnabledCheck.isSelected = enabled
         }
 
     var predictiveGenerationEnabled: Boolean

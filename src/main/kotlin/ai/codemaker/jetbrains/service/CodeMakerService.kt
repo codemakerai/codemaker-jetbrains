@@ -60,6 +60,27 @@ class CodeMakerService(private val project: Project) {
         process(Mode.FIX_SYNTAX, "Fixing code", path, modify, codePath)
     }
 
+    fun completion(path: VirtualFile, offset: Int, isMultilineAutocompletion: Boolean): String {
+        try {
+            val source = readFile(path) ?: return ""
+            val language = FileExtensions.languageFromExtension(path.extension)
+
+            val contextId = discoverContext(client, language!!, source, path.path)
+
+            val response = client.completion(createCompletionRequest(language!!, source, offset, isMultilineAutocompletion, contextId))
+
+            return response.output.source;
+        } catch (e: ProcessCanceledException) {
+            throw e
+        } catch (e: UnauthorizedException) {
+            logger.error("Unauthorized request. Configure the the API Key in the Preferences > Tools > CodeMaker AI menu.", e)
+            throw e
+        } catch (e: Exception) {
+            logger.error("Failed to complete code in file.", e)
+            return ""
+        }
+    }
+
     fun predict(path: VirtualFile?) {
         runInBackground("Predictive generation") {
             try {
@@ -257,7 +278,7 @@ class CodeMakerService(private val project: Project) {
                 mode,
                 language,
                 Input(source),
-                Options(modify, codePath, prompt, true, contextId)
+                Options(modify, codePath, prompt, true, false, contextId)
         )
     }
 
@@ -265,7 +286,15 @@ class CodeMakerService(private val project: Project) {
         return PredictRequest(
                 language,
                 Input(source),
-                Options(null, null, null, false, contextId)
+                Options(null, null, null, false, false, contextId)
+        )
+    }
+
+    private fun createCompletionRequest(language: Language, source: String, offset: Int, isMultilineAutocompletion: Boolean, contextId: String?): CompletionRequest {
+        return CompletionRequest(
+                language,
+                Input(source),
+                Options(null, "@$offset", null, false, isMultilineAutocompletion, contextId)
         )
     }
 

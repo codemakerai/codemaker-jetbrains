@@ -128,11 +128,17 @@
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="shift ctrl ENTER" replace-all="true"/>
         </action>
 
+        <action class="ai.codemaker.jetbrains.action.AcceptInlineCompletionAction"
+                id="AcceptInlineCompletionAction" text="Accept Inline Completion">
+            <keyboard-shortcut first-keystroke="TAB" keymap="$default"/>
+        </action>
+
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
         <actionOnSave implementation="ai.codemaker.jetbrains.extension.PredictiveSaveActionExtension" />
         <actionOnSave implementation="ai.codemaker.jetbrains.extension.CorrectionSaveActionExtension" />
+        <editorFactoryListener implementation="ai.codemaker.jetbrains.inline.listener.CodemakerEditorFactoryListener"/>
     </extensions>
 
     <projectListeners>

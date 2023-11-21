@@ -5,12 +5,14 @@
 package ai.codemaker.jetbrains.activity
 
 import ai.codemaker.jetbrains.image.Icons
+import ai.codemaker.jetbrains.inline.listener.CodemakerEditorFactoryListener
 import ai.codemaker.jetbrains.settings.AppSettingsConfigurable
 import ai.codemaker.jetbrains.settings.AppSettingsState
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
@@ -22,6 +24,10 @@ class StartupActivity : ProjectActivity {
     }
 
     override suspend fun execute(project: Project) {
+
+        // TODO move to proper place
+        EditorFactory.getInstance().addEditorFactoryListener(CodemakerEditorFactoryListener(), project)
+
         val settings = AppSettingsState.instance
         if (settings.apiKey.isNullOrBlank()) {
             val notificationGroup = NotificationGroupManager.getInstance()

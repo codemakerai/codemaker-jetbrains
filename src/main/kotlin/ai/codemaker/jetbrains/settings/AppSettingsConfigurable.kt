@@ -27,6 +27,8 @@ class AppSettingsConfigurable : Configurable {
         val settings = AppSettingsState.instance
         return settingsComponent!!.apiKey != settings.apiKey
                 || settingsComponent!!.codeActionsEnabled != settings.codeActionsEnabled
+                || settingsComponent!!.autocompletionEnabled != settings.autocompletionEnabled
+                || settingsComponent!!.multilineAutocompletionEnabled != settings.multilineAutocompletionEnabled
                 || settingsComponent!!.predictiveGenerationEnabled != settings.predictiveGenerationEnabled
                 || settingsComponent!!.extendedSourceContextEnabled != settings.extendedSourceContextEnabled
                 || settingsComponent!!.syntaxAutocorrectionEnabled != settings.syntaxAutocorrectionEnabled
@@ -36,6 +38,8 @@ class AppSettingsConfigurable : Configurable {
         val settings = AppSettingsState.instance
         settings.apiKey = settingsComponent!!.apiKey
         settings.codeActionsEnabled = settingsComponent!!.codeActionsEnabled
+        settings.autocompletionEnabled = settingsComponent!!.autocompletionEnabled
+        settings.multilineAutocompletionEnabled = settingsComponent!!.multilineAutocompletionEnabled
         settings.predictiveGenerationEnabled = settingsComponent!!.predictiveGenerationEnabled
         settings.extendedSourceContextEnabled = settingsComponent!!.extendedSourceContextEnabled
         settings.syntaxAutocorrectionEnabled = settingsComponent!!.syntaxAutocorrectionEnabled
@@ -45,6 +49,8 @@ class AppSettingsConfigurable : Configurable {
         val settings = AppSettingsState.instance
         settingsComponent!!.apiKey = settings.apiKey
         settingsComponent!!.codeActionsEnabled = settings.codeActionsEnabled
+        settingsComponent!!.autocompletionEnabled = settings.autocompletionEnabled
+        settingsComponent!!.multilineAutocompletionEnabled = settings.multilineAutocompletionEnabled
         settingsComponent!!.predictiveGenerationEnabled = settings.predictiveGenerationEnabled
         settingsComponent!!.extendedSourceContextEnabled = settings.extendedSourceContextEnabled
         settingsComponent!!.syntaxAutocorrectionEnabled = settings.syntaxAutocorrectionEnabled
