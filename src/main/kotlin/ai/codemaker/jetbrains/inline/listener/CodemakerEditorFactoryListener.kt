@@ -4,6 +4,7 @@ import ai.codemaker.jetbrains.inline.render.CodemakerAutocompleteBlockElementRen
 import ai.codemaker.jetbrains.inline.render.CodemakerAutocompleteSingleLineRenderer
 import ai.codemaker.jetbrains.inline.util.InlayUtil
 import ai.codemaker.jetbrains.service.CodeMakerService
+import ai.codemaker.jetbrains.settings.AppSettingsState
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationManager
@@ -62,6 +63,10 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
         private val logger = Logger.getInstance(CodemakerDocumentListener::class.java)
 
         override fun documentChangedNonBulk(event: DocumentEvent) {
+            if (!AppSettingsState.instance.autocompletionEnabled) {
+                return
+            }
+
             getActiveEditor(event.document)?.let { editor ->
                 val newFragment = event.newFragment.toString()
                 val currentTextInlay = InlayUtil.getInlayTextAtCaret(editor)
@@ -84,11 +89,13 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
                 // 1. If the file is supported
                 // 2. If the cursor is not in the middle of a line
 
+                val multilineAutocompletionEnabled = AppSettingsState.instance.multilineAutocompletionEnabled
+
                 // TODO: Add cancellation token(debounce) like vscode extension, if user types too fast, cancel the previous request
                 // Using Coroutines to avoid blocking the UI thread
                 GlobalScope.launch {
                     // TODO: response is always empty, need to fix
-                    val completion = service.complete(virtualFile, event.offset)
+                    val completion = service.completion(virtualFile, event.offset, multilineAutocompletionEnabled)
                     logger.info("completion: $completion")
                     ApplicationManager.getApplication().invokeLater {
                         displayAutoComplete(editor, changeOffset, completion)

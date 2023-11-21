@@ -60,14 +60,14 @@ class CodeMakerService(private val project: Project) {
         process(Mode.FIX_SYNTAX, "Fixing code", path, modify, codePath)
     }
 
-    fun complete(path: VirtualFile, offset: Int): String {
+    fun completion(path: VirtualFile, offset: Int, isMultilineAutocompletion: Boolean): String {
         try {
             val source = readFile(path) ?: return ""
             val language = FileExtensions.languageFromExtension(path.extension)
 
             val contextId = discoverContext(client, language!!, source, path.path)
 
-            val response = client.completion(createCompletionRequest(language!!, source, offset, contextId))
+            val response = client.completion(createCompletionRequest(language!!, source, offset, isMultilineAutocompletion, contextId))
 
             return response.output.source;
         } catch (e: ProcessCanceledException) {
@@ -290,11 +290,11 @@ class CodeMakerService(private val project: Project) {
         )
     }
 
-    private fun createCompletionRequest(language: Language, source: String, offset: Int, contextId: String?): CompletionRequest {
+    private fun createCompletionRequest(language: Language, source: String, offset: Int, isMultilineAutocompletion: Boolean, contextId: String?): CompletionRequest {
         return CompletionRequest(
                 language,
                 Input(source),
-                Options(null, "@$offset", null, false, false, contextId)
+                Options(null, "@$offset", null, false, isMultilineAutocompletion, contextId)
         )
     }
 
