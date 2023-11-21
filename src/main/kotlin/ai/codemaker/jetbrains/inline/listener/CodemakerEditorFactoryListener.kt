@@ -88,7 +88,7 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
                 // Using Coroutines to avoid blocking the UI thread
                 GlobalScope.launch {
                     // TODO: response is always empty, need to fix
-                    val completion = service.complete(virtualFile, event.offset, InlayUtil.complete())
+                    val completion = service.complete(virtualFile, event.offset)
                     logger.info("completion: $completion")
                     ApplicationManager.getApplication().invokeLater {
                         displayAutoComplete(editor, changeOffset, completion)

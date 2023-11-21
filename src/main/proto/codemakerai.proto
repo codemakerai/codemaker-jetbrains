@@ -66,6 +66,13 @@ message RequiredSourceContext {
   string path = 1;
 }
 
+message CodeSnippetContext {
+  string language = 1;
+  string snippet = 2;
+  string relativePath = 3;
+  double score = 4;
+}
+
 message ProcessOptions {
   Modify modify = 1;
   string codePath = 2;
@@ -75,7 +82,9 @@ message ProcessOptions {
 }
 
 message CompletionOptions {
-
+  string codePath = 1;
+  bool allowMultiLineAutocomplete = 2;
+  repeated CodeSnippetContext codeSnippetContexts = 3;
 }
 
 message PredictionOptions {

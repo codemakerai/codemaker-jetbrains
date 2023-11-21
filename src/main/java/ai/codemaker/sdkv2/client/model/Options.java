@@ -13,13 +13,16 @@ public class Options {
 
     private final boolean detectSyntaxErrors;
 
+    private final boolean allowMultiLineAutocomplete;
+
     private final String contextId;
 
-    public Options(Modify modify, String codePath, String prompt, boolean detectSyntaxErrors, String contextId) {
+    public Options(Modify modify, String codePath, String prompt, boolean detectSyntaxErrors, boolean allowMultiLineAutocomplete, String contextId) {
         this.modify = modify;
         this.codePath = codePath;
         this.prompt = prompt;
         this.detectSyntaxErrors = detectSyntaxErrors;
+        this.allowMultiLineAutocomplete = allowMultiLineAutocomplete;
         this.contextId = contextId;
     }
 
@@ -37,6 +40,10 @@ public class Options {
 
     public boolean isDetectSyntaxErrors() {
         return detectSyntaxErrors;
+    }
+
+    public boolean isAllowMultiLineAutocomplete() {
+        return allowMultiLineAutocomplete;
     }
 
     public String getContextId() {

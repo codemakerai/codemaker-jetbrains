@@ -99,8 +99,11 @@ public final class DefaultClient implements Client {
     }
 
     private static Codemakerai.CompletionOptions createCompletionOptions(Options options) {
+        // TODO map remaining attributes
         return Codemakerai.CompletionOptions
                 .newBuilder()
+                .setCodePath(options.getCodePath())
+                .setAllowMultiLineAutocomplete(options.isAllowMultiLineAutocomplete())
                 .build();
     }
 
