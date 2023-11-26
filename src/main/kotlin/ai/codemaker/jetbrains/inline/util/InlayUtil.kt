@@ -47,26 +47,5 @@ class InlayUtil {
         fun clearAllAutocompleteInlays(editor: Editor) {
             getAllAutocompleteInlays(editor).forEach(Disposer::dispose)
         }
-
-        // Test only
-        fun complete(): String {
-            val codeSnippets = listOf(
-                    "int a = 5;", // Single-line
-                    "String name = \"John Doe\";", // Single-line
-                    """
-    for (int i = 0; i < 10; i++) {
-        System.out.println(i);
-    }""", // Multi-line
-
-                    """    if (x > 0) {
-        return x;
-    } else {
-        return -x;
-    }""", // Multi-line
-                    "double radius = 2.5;\ndouble area = Math.PI * radius * radius;", // Multi-line
-                    "List<String> names = new ArrayList<>();\n        names.add(\"Alice\");\n        names.add(\"Bob\");" // Multi-line
-            )
-            return codeSnippets[Random.nextInt(codeSnippets.size)]
-        }
     }
 }

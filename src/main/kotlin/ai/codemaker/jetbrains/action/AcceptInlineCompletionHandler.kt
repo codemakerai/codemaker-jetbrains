@@ -35,7 +35,7 @@ object AcceptInlineCompletionAction :
             ApplicationManager.getApplication().runWriteAction {
                 try {
                     val document = editor.document
-                    val caretOffset = editor.caretModel.offset
+                    val offset = editor.caretModel.offset
                     val inlays = InlayUtil.getAllAutocompleteInlays(editor)
 
                     val completion = buildString {
@@ -46,17 +46,14 @@ object AcceptInlineCompletionAction :
                             append((it.renderer as CodemakerAutocompleteSingleLineRenderer).text)
                         }
                         blockInlay?.let {
-                            if (singleLineInlay != null) {
-                                append("\n")
-                            }
+                            append("\n")
                             append((it.renderer as CodemakerAutocompleteBlockElementRenderer).text)
                         }
                     }
 
-                    val lineEndOffset = document.getLineEndOffset(document.getLineNumber(caretOffset))
-                    document.replaceString(caretOffset, lineEndOffset, completion)
-                    editor.caretModel.moveToOffset(caretOffset + completion.length)
                     InlayUtil.clearAllAutocompleteInlays(editor)
+                    document.insertString(offset, completion)
+                    editor.caretModel.moveToOffset(offset + completion.length)
                 } catch (e: Exception) {
                     logger.error("Failed to accept inline completion", e)
                 }

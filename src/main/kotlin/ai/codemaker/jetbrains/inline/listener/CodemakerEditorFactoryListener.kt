@@ -1,6 +1,7 @@
 package ai.codemaker.jetbrains.inline.listener
 
 import ai.codemaker.jetbrains.file.FileExtensions
+import ai.codemaker.jetbrains.inline.completion.CompletionProvider
 import ai.codemaker.jetbrains.inline.render.CodemakerAutocompleteBlockElementRenderer
 import ai.codemaker.jetbrains.inline.render.CodemakerAutocompleteSingleLineRenderer
 import ai.codemaker.jetbrains.inline.util.InlayUtil
@@ -9,14 +10,11 @@ import ai.codemaker.jetbrains.settings.AppSettingsState
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.*
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.psi.PsiDocumentManager
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class CodemakerEditorFactoryListener : EditorFactoryListener {
 
@@ -45,6 +43,7 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
         override fun caretPositionChanged(event: CaretEvent) {
             if (!isSingleOffsetChange(event)) {
                 event.editor.let { editor ->
+                    CompletionProvider.cancel()
                     InlayUtil.clearAllAutocompleteInlays(editor)
                 }
             }
@@ -61,25 +60,34 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
      */
     private inner class CodemakerDocumentListener : BulkAwareDocumentListener {
 
-        private val logger = Logger.getInstance(CodemakerDocumentListener::class.java)
-
         override fun documentChangedNonBulk(event: DocumentEvent) {
             if (!AppSettingsState.instance.autocompletionEnabled) {
                 return
             }
 
+            if (event.isWholeTextReplaced) {
+                return
+            }
+
+            val newFragment = event.newFragment.toString()
+            if (newFragment.isBlank()) {
+                return
+            }
+
             getActiveEditor(event.document)?.let { editor ->
-                val newFragment = event.newFragment.toString()
                 val currentTextInlay = InlayUtil.getInlayTextAtCaret(editor)
+
+                val offset = event.offset
+                val insertOffset = offset + event.newLength
 
                 InlayUtil.clearAllAutocompleteInlays(editor)
                 // If what user types is matched with the completion, update the completion with remaining text
                 if (newFragment.isNotEmpty() && currentTextInlay?.startsWith(newFragment) == true) {
                     val newCompletion = currentTextInlay.substring(newFragment.length)
-                    displayAutoComplete(editor, event.offset + event.newLength, newCompletion)
+                    displayAutoComplete(editor, insertOffset, newCompletion)
                     return
                 }
-                val changeOffset = event.offset + event.newLength
+
 
                 val project = editor.project ?: return
                 val service: CodeMakerService = project.getService(CodeMakerService::class.java)
@@ -90,18 +98,10 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
                     return
                 }
 
-                // TODO: Add logic to check if auto complete should be triggered like:
-                // 1. If the cursor is not in the middle of a line
-
-                val multilineAutocompletionEnabled = AppSettingsState.instance.multilineAutocompletionEnabled
-
-                // TODO: Add cancellation token(debounce) like vscode extension, if user types too fast, cancel the previous request
-                // Using Coroutines to avoid blocking the UI thread
-                GlobalScope.launch {
-                    val completion = service.completion(virtualFile, event.offset, multilineAutocompletionEnabled)
-                    logger.info("completion: $completion")
+                val isMultiLineAllowed = AppSettingsState.instance.multilineAutocompletionEnabled
+                CompletionProvider.completion(service, virtualFile, offset, isMultiLineAllowed) { completion ->
                     ApplicationManager.getApplication().invokeLater {
-                        displayAutoComplete(editor, changeOffset, completion)
+                        displayAutoComplete(editor, insertOffset , completion)
                     }
                 }
             }
@@ -131,16 +131,16 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
                 return
             }
 
-            var lines = suggestion.split("\n")
-            var isMultiLine = lines.size > 1
+            val lines = suggestion.split("\n")
+            val isMultiLine = lines.size > 1
 
-            var firstLine = lines[0]
+            val firstLine = lines[0]
             if (firstLine.isNotEmpty()) {
                 editor.inlayModel.addInlineElement(offset, true, CodemakerAutocompleteSingleLineRenderer(firstLine, editor))
             }
 
             if (isMultiLine) {
-                var multiLines = lines.subList(1, lines.size).joinToString("\n")
+                val multiLines = lines.subList(1, lines.size).joinToString("\n")
                 editor.inlayModel.addBlockElement(offset, true, false, Int.MAX_VALUE, CodemakerAutocompleteBlockElementRenderer(multiLines, editor))
             }
         }
