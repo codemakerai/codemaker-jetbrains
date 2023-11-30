@@ -31,6 +31,7 @@ class AppSettingsConfigurable : Configurable {
                 || settingsComponent!!.multilineAutocompletionEnabled != settings.multilineAutocompletionEnabled
                 || settingsComponent!!.predictiveGenerationEnabled != settings.predictiveGenerationEnabled
                 || settingsComponent!!.extendedSourceContextEnabled != settings.extendedSourceContextEnabled
+                || settingsComponent!!.sourceGraphGenerationEnabled != settings.sourceGraphGenerationEnabled
                 || settingsComponent!!.syntaxAutocorrectionEnabled != settings.syntaxAutocorrectionEnabled
     }
 
@@ -42,6 +43,7 @@ class AppSettingsConfigurable : Configurable {
         settings.multilineAutocompletionEnabled = settingsComponent!!.multilineAutocompletionEnabled
         settings.predictiveGenerationEnabled = settingsComponent!!.predictiveGenerationEnabled
         settings.extendedSourceContextEnabled = settingsComponent!!.extendedSourceContextEnabled
+        settings.sourceGraphGenerationEnabled = settingsComponent!!.sourceGraphGenerationEnabled
         settings.syntaxAutocorrectionEnabled = settingsComponent!!.syntaxAutocorrectionEnabled
     }
 
@@ -53,6 +55,7 @@ class AppSettingsConfigurable : Configurable {
         settingsComponent!!.multilineAutocompletionEnabled = settings.multilineAutocompletionEnabled
         settingsComponent!!.predictiveGenerationEnabled = settings.predictiveGenerationEnabled
         settingsComponent!!.extendedSourceContextEnabled = settings.extendedSourceContextEnabled
+        settingsComponent!!.sourceGraphGenerationEnabled = settings.sourceGraphGenerationEnabled
         settingsComponent!!.syntaxAutocorrectionEnabled = settings.syntaxAutocorrectionEnabled
     }
 }

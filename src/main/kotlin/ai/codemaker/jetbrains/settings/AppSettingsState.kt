@@ -31,6 +31,9 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     var extendedSourceContextEnabled: Boolean = false
 
     @JvmField
+    var sourceGraphGenerationEnabled: Boolean = false
+
+    @JvmField
     var syntaxAutocorrectionEnabled: Boolean = false
 
     override fun getState(): AppSettingsState {
