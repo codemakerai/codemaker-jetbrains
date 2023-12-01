@@ -15,23 +15,31 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.*
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.psi.PsiDocumentManager
+import java.util.*
+import kotlin.collections.HashSet
 
 class CodemakerEditorFactoryListener : EditorFactoryListener {
 
     private val codemakerCaretListener by lazy { CodemakerCaretListener() }
     private val codemakerDocumentListener by lazy { CodemakerDocumentListener() }
 
+    private val editors = Collections.newSetFromMap(IdentityHashMap<Editor, Boolean>())
+
     override fun editorCreated(event: EditorFactoryEvent) {
         event.editor.apply {
             document.addDocumentListener(codemakerDocumentListener)
             caretModel.addCaretListener(codemakerCaretListener)
         }
+        editors.add(event.editor)
     }
 
     override fun editorReleased(event: EditorFactoryEvent) {
-        event.editor.apply {
-            caretModel.removeCaretListener(codemakerCaretListener)
-            document.removeDocumentListener(codemakerDocumentListener)
+        if (editors.contains(event.editor)) {
+            event.editor.apply {
+                caretModel.removeCaretListener(codemakerCaretListener)
+                document.removeDocumentListener(codemakerDocumentListener)
+            }
+            editors.remove(event.editor)
         }
     }
 
