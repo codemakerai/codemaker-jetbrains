@@ -23,12 +23,16 @@ class AppSettingsComponent {
     init {
         panel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(JBLabel("API Key: "), apiKeyText, 1, false)
-                .addLabeledComponent(JBLabel("Enable code actions: "), codeActionsEnabledCheck, 1, false)
+                .addSeparator()
                 .addLabeledComponent(JBLabel("Enable autocompletion: "), autocompletionEnabledCheck, 1, false)
                 .addLabeledComponent(JBLabel("Enable multiline autocompletion: "), multilineAutocompletionEnabledCheck, 1, false)
+                .addSeparator()
+                .addLabeledComponent(JBLabel("Enable code actions: "), codeActionsEnabledCheck, 1, false)
                 .addLabeledComponent(JBLabel("Enable predictive generation: "), predictiveGenerationEnabledCheck, 1, false)
+                .addSeparator()
                 .addLabeledComponent(JBLabel("Enable extended source context: "), extendedSourceContextEnabledCheck, 1, false)
                 .addLabeledComponent(JBLabel("Enable source graph generation: "), sourceGraphGenerationEnabledCheck, 1, false)
+                .addSeparator()
                 .addLabeledComponent(JBLabel("Enable syntax autocorrection: "), syntaxAutocorrectionEnabledCheck, 1, false)
                 .addComponentFillVertically(JPanel(), 0)
                 .panel
