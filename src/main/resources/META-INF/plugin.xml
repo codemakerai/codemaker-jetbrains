@@ -90,6 +90,11 @@
                     description="Generates code">
                 <keyboard-shortcut keymap="$default" first-keystroke="alt ctrl G" second-keystroke="C"/>
             </action>
+            <action id="ai.codemaker.jetbrains.GenerateSourceGraphCodeAction"
+                    class="ai.codemaker.jetbrains.action.GenerateSourceGraphCodeAction" text="Code Graph"
+                    description="Generates source graph code">
+                <keyboard-shortcut keymap="$default" first-keystroke="alt ctrl G" second-keystroke="G"/>
+            </action>
             <action id="ai.codemaker.jetbrains.GenerateDocumentationAction"
                     class="ai.codemaker.jetbrains.action.GenerateDocumentationAction" text="Documentation"
                     description="Generates documentation">
