@@ -17,7 +17,6 @@ class AppSettingsComponent {
     private val multilineAutocompletionEnabledCheck = JBCheckBox()
     private val predictiveGenerationEnabledCheck = JBCheckBox()
     private val extendedSourceContextEnabledCheck = JBCheckBox()
-    private val sourceGraphGenerationEnabledCheck = JBCheckBox()
     private val syntaxAutocorrectionEnabledCheck = JBCheckBox()
 
     init {
@@ -31,7 +30,6 @@ class AppSettingsComponent {
                 .addLabeledComponent(JBLabel("Enable predictive generation: "), predictiveGenerationEnabledCheck, 1, false)
                 .addSeparator()
                 .addLabeledComponent(JBLabel("Enable extended source context: "), extendedSourceContextEnabledCheck, 1, false)
-                .addLabeledComponent(JBLabel("Enable source graph generation: "), sourceGraphGenerationEnabledCheck, 1, false)
                 .addSeparator()
                 .addLabeledComponent(JBLabel("Enable syntax autocorrection: "), syntaxAutocorrectionEnabledCheck, 1, false)
                 .addComponentFillVertically(JPanel(), 0)
@@ -72,12 +70,6 @@ class AppSettingsComponent {
         get() = extendedSourceContextEnabledCheck.isSelected
         set(enabled) {
             extendedSourceContextEnabledCheck.isSelected = enabled
-        }
-
-    var sourceGraphGenerationEnabled: Boolean
-        get() = sourceGraphGenerationEnabledCheck.isSelected
-        set(enabled) {
-            sourceGraphGenerationEnabledCheck.isSelected = enabled
         }
 
     var syntaxAutocorrectionEnabled: Boolean

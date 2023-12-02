@@ -32,7 +32,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
     testImplementation("org.mock-server:mockserver-junit-jupiter:5.15.0")
-
 }
 
 tasks {

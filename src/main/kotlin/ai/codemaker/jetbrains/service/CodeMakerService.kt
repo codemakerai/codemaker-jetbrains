@@ -44,6 +44,10 @@ class CodeMakerService(private val project: Project) {
         process(Mode.CODE, "Generating code", path, modify, codePath)
     }
 
+    fun generateSourceGraphCode(path: VirtualFile?) {
+        processSourceGraph(Mode.CODE, "Generating source graph code", path)
+    }
+
     fun generateInlineCode(path: VirtualFile?, modify: Modify, codePath: String? = null) {
         process(Mode.INLINE_CODE, "Generating inline code", path, modify, codePath)
     }
@@ -65,7 +69,7 @@ class CodeMakerService(private val project: Project) {
             val source = readFile(path) ?: return ""
             val language = FileExtensions.languageFromExtension(path.extension)
 
-            val contextId = registerContext(client, language!!, source, path.path, false, 0)
+            val contextId = registerContext(client, language!!, source, path.path)
 
             val response = client.completion(createCompletionRequest(language!!, source, offset, isMultilineAutocompletion, contextId))
 
@@ -133,6 +137,32 @@ class CodeMakerService(private val project: Project) {
         }
     }
 
+    private fun processSourceGraph(mode: Mode, title: String, path: VirtualFile?) {
+        runInBackground(title) {
+            try {
+                walkFiles(path) { file: VirtualFile ->
+                    if (file.isDirectory) {
+                        return@walkFiles true
+                    }
+
+                    try {
+                        processSourceGraphFile(client, file, mode)
+                        return@walkFiles true
+                    } catch (e: ProcessCanceledException) {
+                        throw e
+                    } catch (e: Exception) {
+                        logger.error("Failed to process $mode in file.", e)
+                        return@walkFiles false
+                    }
+                }
+            } catch (e: ProcessCanceledException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error("Failed to process $mode task.", e)
+            }
+        }
+    }
+
     private fun runInBackground(title: String, runnable: Runnable) {
         val task = object : Task.Backgroundable(project, title, true) {
             override fun run(indicator: ProgressIndicator) {
@@ -174,7 +204,7 @@ class CodeMakerService(private val project: Project) {
             val source = readFile(file) ?: return
             val language = FileExtensions.languageFromExtension(file.extension)
 
-            val contextId = registerContext(client, language!!, source, file.path, false, 0)
+            val contextId = registerContext(client, language!!, source, file.path)
 
             predictiveProcess(client, language!!, source, contextId)
         } catch (e: ProcessCanceledException) {
@@ -187,12 +217,12 @@ class CodeMakerService(private val project: Project) {
         }
     }
 
-    private fun processFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify, codePath: String? = null, prompt: String? = null, depth: Int = 0) {
+    private fun processFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify, codePath: String? = null, prompt: String? = null) {
         try {
             val source = readFile(file) ?: return
             val language = FileExtensions.languageFromExtension(file.extension)
 
-            val contextId = registerContext(client, mode, language!!, source, file.path, depth)
+            val contextId = registerContext(client, mode, language!!, source, file.path)
 
             val output = process(client, mode, language!!, source, modify, codePath, prompt, contextId)
 
@@ -207,22 +237,47 @@ class CodeMakerService(private val project: Project) {
         }
     }
 
-    private fun registerContext(client: Client, mode: Mode, language: Language, source: String, path: String, depth: Int): String? {
+    private fun processSourceGraphFile(client: Client, file: VirtualFile, mode: Mode, depth: Int = 0) {
+        try {
+            val language = FileExtensions.languageFromExtension(file.extension)
+            val source = readFile(file) ?: return
+
+            if (depth < 1) {
+                val paths = discoverContext(client, language!!, source, file.path)
+                paths.forEach {
+                    val dependantFile = VirtualFileManager.getInstance().findFileByNioPath(it) ?: return@forEach
+                    processSourceGraphFile(client, dependantFile, Mode.CODE, depth + 1)
+                }
+            }
+
+            val contextId = registerContext(client, mode, language!!, source, file.path)
+            val output = process(client, mode, language!!, source, Modify.NONE, null, null, contextId)
+            writeFile(file, output)
+        } catch (e: ProcessCanceledException) {
+            throw e
+        } catch (e: UnauthorizedException) {
+            logger.error("Unauthorized request. Configure the the API Key in the Preferences > Tools > CodeMaker AI menu.", e)
+            throw e
+        } catch (e: Exception) {
+            logger.error("Failed to process file.", e)
+        }
+    }
+
+    private fun registerContext(client: Client, mode: Mode, language: Language, source: String, path: String): String? {
         if (!isExtendedContextSupported(mode)) {
             return null
         }
 
-        val sourceGraphGeneration = AppSettingsState.instance.sourceGraphGenerationEnabled && mode == Mode.CODE
-        return registerContext(client, language, source, path, sourceGraphGeneration, depth)
+        return registerContext(client, language, source, path)
     }
 
-    private fun registerContext(client: Client, language: Language, source: String, path: String, sourceGraphGeneration: Boolean, depth: Int = 0): String? {
+    private fun registerContext(client: Client, language: Language, source: String, path: String): String? {
         try {
             if (!AppSettingsState.instance.extendedSourceContextEnabled) {
                 return null
             }
 
-            val sourceContexts = resolveContext(client, language, source, path, sourceGraphGeneration, depth)
+            val sourceContexts = resolveContext(client, language, source, path)
 
             val createContextResponse = client.createContext(CreateContextRequest())
             val contextId = createContextResponse.id
@@ -242,21 +297,13 @@ class CodeMakerService(private val project: Project) {
             Path.of(path).parent.resolve(it.path).normalize()
         }
 
-        val sourceContexts = paths.filter {
+        return paths.filter {
             Files.exists(it)
         }
-        return sourceContexts
     }
 
-    private fun resolveContext(client: Client, language: Language, source: String, path: String, sourceGraphGeneration: Boolean, depth: Int): List<Context> {
+    private fun resolveContext(client: Client, language: Language, source: String, path: String): List<Context> {
         val sourceContexts = discoverContext(client, language, source, path)
-
-        if (sourceGraphGeneration && depth < 1) {
-            sourceContexts.forEach {
-                val file = VirtualFileManager.getInstance().findFileByNioPath(it) ?: return@forEach
-                processFile(client, file, Mode.CODE, Modify.NONE, null, null, depth + 1)
-            }
-        }
 
         return sourceContexts.map {
             val file = VirtualFileManager.getInstance().findFileByNioPath(it) ?: return@map null

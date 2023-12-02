@@ -14,10 +14,6 @@ import com.intellij.psi.PsiFile
 
 class ReplaceMethodCodeAction : BaseCodeAction(Modify.REPLACE) {
 
-    override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.BGT
-    }
-
     override fun update(e: AnActionEvent) {
         val presentation = e.presentation
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return
