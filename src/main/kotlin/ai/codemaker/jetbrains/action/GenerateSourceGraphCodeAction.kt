@@ -5,13 +5,18 @@
 package ai.codemaker.jetbrains.action
 
 import ai.codemaker.jetbrains.service.CodeMakerService
-import ai.codemaker.sdkv2.client.model.Modify
+import ai.codemaker.jetbrains.settings.AppSettingsState
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.psi.PsiDocumentManager
 
 class GenerateSourceGraphCodeAction : AnAction() {
+
+    override fun update(e: AnActionEvent) {
+        val presentation = e.presentation
+        presentation.isVisible = AppSettingsState.instance.extendedSourceContextEnabled
+    }
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.getData(CommonDataKeys.PROJECT) ?: return
