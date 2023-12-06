@@ -34,6 +34,8 @@ import java.util.concurrent.Callable
 @Service(Service.Level.PROJECT)
 class CodeMakerService(private val project: Project) {
 
+    private val maximumSourceGraphDepth = 16
+
     private val logger = Logger.getInstance(CodeMakerService::class.java)
 
     private val client: Client = DefaultClient {
@@ -242,11 +244,14 @@ class CodeMakerService(private val project: Project) {
             val language = FileExtensions.languageFromExtension(file.extension)
             val source = readFile(file) ?: return
 
-            if (depth < 1) {
-                val paths = discoverContext(client, language!!, source, file.path)
-                paths.forEach {
-                    val dependantFile = VirtualFileManager.getInstance().findFileByNioPath(it) ?: return@forEach
-                    processSourceGraphFile(client, dependantFile, Mode.CODE, depth + 1)
+            if (depth < maximumSourceGraphDepth) {
+                val response = discoverContext(client, language!!, source, file.path)
+                if (response.isRequiresProcessing) {
+                    val paths = resolveContextPaths(response, file.path)
+                    paths.forEach {
+                        val dependantFile = VirtualFileManager.getInstance().findFileByNioPath(it) ?: return@forEach
+                        processSourceGraphFile(client, dependantFile, Mode.CODE, depth + 1)
+                    }
                 }
             }
 
@@ -290,9 +295,11 @@ class CodeMakerService(private val project: Project) {
         }
     }
 
-    private fun discoverContext(client: Client, language: Language, source: String, path: String): List<Path> {
-        val discoverContextResponse = client.discoverContext(DiscoverContextRequest(Context(language, Input(source), path)))
+    private fun discoverContext(client: Client, language: Language, source: String, path: String): DiscoverContextResponse {
+        return client.discoverContext(DiscoverContextRequest(Context(language, Input(source), path)))
+    }
 
+    private fun resolveContextPaths(discoverContextResponse: DiscoverContextResponse, path: String): List<Path> {
         val paths = discoverContextResponse.requiredContexts.map {
             Path.of(path).parent.resolve(it.path).normalize()
         }
@@ -302,8 +309,13 @@ class CodeMakerService(private val project: Project) {
         }
     }
 
+    private fun discoverContextPaths(client: Client, language: Language, source: String, path: String): List<Path> {
+        val discoverContextResponse = discoverContext(client, language, source, path)
+        return resolveContextPaths(discoverContextResponse, path)
+    }
+
     private fun resolveContext(client: Client, language: Language, source: String, path: String): List<Context> {
-        val sourceContexts = discoverContext(client, language, source, path)
+        val sourceContexts = discoverContextPaths(client, language, source, path)
 
         return sourceContexts.map {
             val file = VirtualFileManager.getInstance().findFileByNioPath(it) ?: return@map null

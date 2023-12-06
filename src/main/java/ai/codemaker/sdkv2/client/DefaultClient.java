@@ -250,8 +250,8 @@ public final class DefaultClient implements Client {
     private DiscoverContextResponse createDiscoverContextResponse(Codemakerai.DiscoverSourceContextResponse response) {
         final Collection<RequiredContext> requiredContexts = response.getContextsList().stream()
                 .map(this::mapRequiredContext)
-                .collect(Collectors.toList());
-        return new DiscoverContextResponse(requiredContexts);
+                .toList();
+        return new DiscoverContextResponse(requiredContexts, response.getRequiresProcessing());
     }
 
     @Override
