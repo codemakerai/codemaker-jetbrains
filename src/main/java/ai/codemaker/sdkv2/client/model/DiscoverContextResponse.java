@@ -10,11 +10,18 @@ public class DiscoverContextResponse {
 
     private final Collection<RequiredContext> requiredContexts;
 
-    public DiscoverContextResponse(Collection<RequiredContext> requiredContexts) {
+    private final boolean requiresProcessing;
+
+    public DiscoverContextResponse(Collection<RequiredContext> requiredContexts, boolean requiresProcessing) {
         this.requiredContexts = requiredContexts;
+        this.requiresProcessing = requiresProcessing;
     }
 
     public Collection<RequiredContext> getRequiredContexts() {
         return requiredContexts;
+    }
+
+    public boolean isRequiresProcessing() {
+        return requiresProcessing;
     }
 }
