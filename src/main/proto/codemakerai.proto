@@ -128,6 +128,7 @@ message DiscoverSourceContextRequest {
 
 message DiscoverSourceContextResponse {
   repeated RequiredSourceContext contexts = 1;
+  bool RequiresProcessing = 2;
 }
 
 message CreateSourceContextRequest {
