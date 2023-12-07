@@ -29,12 +29,15 @@ import com.intellij.psi.PsiManager
 import com.intellij.util.ThrowableRunnable
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.*
 import java.util.concurrent.Callable
 
 @Service(Service.Level.PROJECT)
 class CodeMakerService(private val project: Project) {
 
     private val maximumSourceGraphDepth = 16
+
+    private val maximumSourceContextSize = 10
 
     private val logger = Logger.getInstance(CodeMakerService::class.java)
 
@@ -282,7 +285,7 @@ class CodeMakerService(private val project: Project) {
                 return null
             }
 
-            val sourceContexts = resolveContext(client, language, source, path)
+            val sourceContexts = resolveContextWithDepth(client, language, source, path, AppSettingsState.instance.extendedSourceContextDepth)
 
             val createContextResponse = client.createContext(CreateContextRequest())
             val contextId = createContextResponse.id
@@ -314,10 +317,29 @@ class CodeMakerService(private val project: Project) {
         return resolveContextPaths(discoverContextResponse, path)
     }
 
-    private fun resolveContext(client: Client, language: Language, source: String, path: String): List<Context> {
-        val sourceContexts = discoverContextPaths(client, language, source, path)
+    private fun resolveContextWithDepth(client: Client, language: Language, source: String, path: String, maximumDepth: Int): List<Context> {
+        val resolvedSourceContexts = ArrayList<Path>()
 
-        return sourceContexts.map {
+        val queue = LinkedList<Path>()
+        queue.addAll(discoverContextPaths(client, language, source, path))
+        var depth = 1
+        var count = queue.size
+
+        while (!queue.isEmpty() && resolvedSourceContexts.size < maximumSourceContextSize) {
+            val child = queue.removeFirst()
+            resolvedSourceContexts.add(child)
+
+            if (depth + 1 <= maximumDepth) {
+                queue.addAll(discoverContextPaths(client, language, source, child.toString()))
+            }
+
+            if (--count == 0) {
+                count = queue.size
+                depth++
+            }
+        }
+
+        return resolvedSourceContexts.map {
             val file = VirtualFileManager.getInstance().findFileByNioPath(it) ?: return@map null
             val contextSource = readFile(file) ?: return@map null
             return@map Context(

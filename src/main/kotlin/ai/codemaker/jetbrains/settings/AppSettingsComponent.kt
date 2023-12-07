@@ -3,10 +3,13 @@
  */
 package ai.codemaker.jetbrains.settings
 
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBComboBoxLabel
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
+import javax.swing.JComboBox
 import javax.swing.JPanel
 
 class AppSettingsComponent {
@@ -17,6 +20,7 @@ class AppSettingsComponent {
     private val multilineAutocompletionEnabledCheck = JBCheckBox()
     private val predictiveGenerationEnabledCheck = JBCheckBox()
     private val extendedSourceContextEnabledCheck = JBCheckBox()
+    private val extendedSourceContextDepthCombo = ComboBox(arrayOf(1, 2, 3))
     private val syntaxAutocorrectionEnabledCheck = JBCheckBox()
 
     init {
@@ -30,6 +34,7 @@ class AppSettingsComponent {
                 .addLabeledComponent(JBLabel("Enable predictive generation: "), predictiveGenerationEnabledCheck, 1, false)
                 .addSeparator()
                 .addLabeledComponent(JBLabel("Enable extended source context: "), extendedSourceContextEnabledCheck, 1, false)
+                .addLabeledComponent(JBLabel("Extended source context depth: "), extendedSourceContextDepthCombo, 1, false)
                 .addSeparator()
                 .addLabeledComponent(JBLabel("Enable syntax autocorrection: "), syntaxAutocorrectionEnabledCheck, 1, false)
                 .addComponentFillVertically(JPanel(), 0)
@@ -70,6 +75,12 @@ class AppSettingsComponent {
         get() = extendedSourceContextEnabledCheck.isSelected
         set(enabled) {
             extendedSourceContextEnabledCheck.isSelected = enabled
+        }
+
+    var extendedSourceContextDepth: Int
+        get() = extendedSourceContextDepthCombo.item
+        set(item) {
+            extendedSourceContextDepthCombo.item = item
         }
 
     var syntaxAutocorrectionEnabled: Boolean

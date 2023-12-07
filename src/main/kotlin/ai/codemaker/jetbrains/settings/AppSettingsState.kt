@@ -31,7 +31,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     var extendedSourceContextEnabled: Boolean = false
 
     @JvmField
-    var sourceGraphGenerationEnabled: Boolean = false
+    var extendedSourceContextDepth: Int = 1
 
     @JvmField
     var syntaxAutocorrectionEnabled: Boolean = false
