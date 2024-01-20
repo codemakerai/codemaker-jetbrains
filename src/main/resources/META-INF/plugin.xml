@@ -150,6 +150,9 @@
         <actionOnSave implementation="ai.codemaker.jetbrains.extension.PredictiveSaveActionExtension" />
         <actionOnSave implementation="ai.codemaker.jetbrains.extension.CorrectionSaveActionExtension" />
         <editorFactoryListener implementation="ai.codemaker.jetbrains.inline.listener.CodemakerEditorFactoryListener"/>
+
+        <toolWindow id="CodeMaker AI" secondary="true" anchor="left"
+                    factoryClass="ai.codemaker.jetbrains.window.AssistantWindowFactory"/>
     </extensions>
 
     <projectListeners>
