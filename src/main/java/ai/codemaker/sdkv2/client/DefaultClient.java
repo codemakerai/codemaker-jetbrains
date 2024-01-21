@@ -4,6 +4,8 @@
 
 package ai.codemaker.sdkv2.client;
 
+import ai.codemaker.sdkv2.client.model.AssistantCompletionRequest;
+import ai.codemaker.sdkv2.client.model.AssistantCompletionResponse;
 import ai.codemaker.sdkv2.client.model.CompletionRequest;
 import ai.codemaker.sdkv2.client.model.CompletionResponse;
 import ai.codemaker.sdkv2.client.model.CreateContextRequest;
@@ -44,8 +46,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -183,6 +183,15 @@ public final class DefaultClient implements Client {
         return Hashing.sha256()
                 .hashBytes(content.duplicate())
                 .toString();
+    }
+
+    @Override
+    public AssistantCompletionResponse assistantCompletion(AssistantCompletionRequest request) {
+        final Codemakerai.AssistantCompletionRequest assistantCompletionRequest = createAssistantCompletionRequest(request);
+
+        final Codemakerai.AssistantCompletionResponse assistantCompletionResponse = doAssistantCompletion(assistantCompletionRequest);
+
+        return createAssistantCompletionResponse(assistantCompletionResponse);
     }
 
     @Override
@@ -328,6 +337,28 @@ public final class DefaultClient implements Client {
         return new RegisterContextResponse();
     }
 
+    private Codemakerai.AssistantCompletionRequest createAssistantCompletionRequest(AssistantCompletionRequest request) {
+        return Codemakerai.AssistantCompletionRequest.newBuilder()
+                .setInput(request.getInput())
+                .build();
+    }
+
+    private Codemakerai.AssistantCompletionResponse doAssistantCompletion(Codemakerai.AssistantCompletionRequest request) {
+        try {
+            return client.assistantCompletion(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private AssistantCompletionResponse createAssistantCompletionResponse(Codemakerai.AssistantCompletionResponse response) {
+        return new AssistantCompletionResponse(response.getOutput());
+    }
+
     private Codemakerai.CompletionRequest createCompletionRequest(CompletionRequest request) {
         final Codemakerai.Input input = createInput(request.getInput());
 
@@ -350,8 +381,8 @@ public final class DefaultClient implements Client {
         }
     }
 
-    private CompletionResponse createCompletionResponse(Codemakerai.CompletionResponse request) {
-        final Codemakerai.Source content = request.getOutput().getSource();
+    private CompletionResponse createCompletionResponse(Codemakerai.CompletionResponse response) {
+        final Codemakerai.Source content = response.getOutput().getSource();
         final String output = decodeOutput(content);
 
         return new CompletionResponse(new Output(output));

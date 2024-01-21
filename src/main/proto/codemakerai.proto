@@ -2,6 +2,7 @@ syntax = "proto3";
 package ai.codemaker.service;
 
 service CodemakerService {
+  rpc AssistantCompletion (AssistantCompletionRequest) returns (AssistantCompletionResponse);
   rpc Completion (CompletionRequest) returns (CompletionResponse);
   rpc Process (ProcessRequest) returns (ProcessResponse);
   rpc Predict (PredictRequest) returns (PredictResponse);
@@ -100,6 +101,14 @@ message ProcessRequest {
 
 message ProcessResponse {
   Output output = 1;
+}
+
+message AssistantCompletionRequest {
+  string input = 1;
+}
+
+message AssistantCompletionResponse {
+  string output = 1;
 }
 
 message CompletionRequest {

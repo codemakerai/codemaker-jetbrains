@@ -69,6 +69,11 @@ class CodeMakerService(private val project: Project) {
         process(Mode.FIX_SYNTAX, "Fixing code", path, modify, codePath)
     }
 
+    fun assistantCompletion(input: String): String {
+        val assistantCompletionResponse = client.assistantCompletion(createAssistantCompletionRequest(input))
+        return assistantCompletionResponse.output
+    }
+
     fun completion(path: VirtualFile, offset: Int, isMultilineAutocompletion: Boolean): String {
         try {
             val source = readFile(path) ?: return ""
@@ -396,6 +401,10 @@ class CodeMakerService(private val project: Project) {
                 Input(source),
                 Options(null, "@$offset", null, false, isMultilineAutocompletion, contextId)
         )
+    }
+
+    private fun createAssistantCompletionRequest(input: String): AssistantCompletionRequest {
+        return AssistantCompletionRequest(input)
     }
 
     private fun isExtendedContextSupported(mode: Mode): Boolean {
