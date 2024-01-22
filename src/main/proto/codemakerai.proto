@@ -3,6 +3,7 @@ package ai.codemaker.service;
 
 service CodemakerService {
   rpc AssistantCompletion (AssistantCompletionRequest) returns (AssistantCompletionResponse);
+  rpc AssistantCodeCompletion (AssistantCodeCompletionRequest) returns (AssistantCodeCompletionResponse);
   rpc Completion (CompletionRequest) returns (CompletionResponse);
   rpc Process (ProcessRequest) returns (ProcessResponse);
   rpc Predict (PredictRequest) returns (PredictResponse);
@@ -104,11 +105,22 @@ message ProcessResponse {
 }
 
 message AssistantCompletionRequest {
-  string input = 1;
+  string message = 1;
 }
 
 message AssistantCompletionResponse {
-  string output = 1;
+  string message = 1;
+}
+
+message AssistantCodeCompletionRequest {
+  string message = 1;
+  Language language = 2;
+  Input input = 3;
+}
+
+message AssistantCodeCompletionResponse {
+  string message = 1;
+  Output output = 2;
 }
 
 message CompletionRequest {

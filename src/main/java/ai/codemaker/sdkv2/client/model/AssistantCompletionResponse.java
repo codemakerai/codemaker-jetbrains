@@ -6,13 +6,13 @@ package ai.codemaker.sdkv2.client.model;
 
 public class AssistantCompletionResponse {
 
-    private final String output;
+    private final String message;
 
-    public AssistantCompletionResponse(String output) {
-        this.output = output;
+    public AssistantCompletionResponse(String message) {
+        this.message = message;
     }
 
-    public String getOutput() {
-        return output;
+    public String getMessage() {
+        return message;
     }
 }

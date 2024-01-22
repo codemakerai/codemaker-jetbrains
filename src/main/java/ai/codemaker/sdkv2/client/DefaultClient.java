@@ -4,6 +4,8 @@
 
 package ai.codemaker.sdkv2.client;
 
+import ai.codemaker.sdkv2.client.model.AssistantCodeCompletionRequest;
+import ai.codemaker.sdkv2.client.model.AssistantCodeCompletionResponse;
 import ai.codemaker.sdkv2.client.model.AssistantCompletionRequest;
 import ai.codemaker.sdkv2.client.model.AssistantCompletionResponse;
 import ai.codemaker.sdkv2.client.model.CompletionRequest;
@@ -195,6 +197,15 @@ public final class DefaultClient implements Client {
     }
 
     @Override
+    public AssistantCodeCompletionResponse assistantCodeCompletion(AssistantCodeCompletionRequest request) {
+        final Codemakerai.AssistantCodeCompletionRequest assistantCodeCompletionRequest = createAssistantCodeCompletionRequest(request);
+
+        final Codemakerai.AssistantCodeCompletionResponse assistantCodeCompletionResponse = doAssistantCodeCompletion(assistantCodeCompletionRequest);
+
+        return createAssistantCodeCompletionResponse(assistantCodeCompletionResponse);
+    }
+
+    @Override
     public CompletionResponse completion(CompletionRequest request) {
         final Codemakerai.CompletionRequest completionRequest = createCompletionRequest(request);
 
@@ -339,7 +350,7 @@ public final class DefaultClient implements Client {
 
     private Codemakerai.AssistantCompletionRequest createAssistantCompletionRequest(AssistantCompletionRequest request) {
         return Codemakerai.AssistantCompletionRequest.newBuilder()
-                .setInput(request.getInput())
+                .setMessage(request.getMessage())
                 .build();
     }
 
@@ -356,7 +367,36 @@ public final class DefaultClient implements Client {
     }
 
     private AssistantCompletionResponse createAssistantCompletionResponse(Codemakerai.AssistantCompletionResponse response) {
-        return new AssistantCompletionResponse(response.getOutput());
+        return new AssistantCompletionResponse(response.getMessage());
+    }
+
+    private Codemakerai.AssistantCodeCompletionRequest createAssistantCodeCompletionRequest(AssistantCodeCompletionRequest request) {
+        final Codemakerai.Input input = createInput(request.getInput());
+
+        return Codemakerai.AssistantCodeCompletionRequest.newBuilder()
+                .setMessage(request.getMessage())
+                .setLanguage(mapLanguage(request.getLanguage()))
+                .setInput(input)
+                .build();
+    }
+
+    private Codemakerai.AssistantCodeCompletionResponse doAssistantCodeCompletion(Codemakerai.AssistantCodeCompletionRequest request) {
+        try {
+            return client.assistantCodeCompletion(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private AssistantCodeCompletionResponse createAssistantCodeCompletionResponse(Codemakerai.AssistantCodeCompletionResponse response) {
+        final Codemakerai.Source content = response.getOutput().getSource();
+        final String output = decodeOutput(content);
+
+        return new AssistantCodeCompletionResponse(response.getMessage(), new Output(output));
     }
 
     private Codemakerai.CompletionRequest createCompletionRequest(CompletionRequest request) {
