@@ -113,7 +113,7 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
         }
 
         private fun appendMessage(message: Message) {
-            val content = renderMarkdown(message.content).replace("\"", "\\\"")
+            val content = renderMarkdown(message.content).replace("\n", "\\n").replace("\"", "\\\"")
             val assistant = (message.role == Role.Assistant).toString()
             chatScreen.cefBrowser.executeJavaScript("window.append(\"$content\", ${assistant})", "", 0)
         }
