@@ -32,6 +32,7 @@ class AppSettingsConfigurable : Configurable {
                 || settingsComponent!!.predictiveGenerationEnabled != settings.predictiveGenerationEnabled
                 || settingsComponent!!.extendedSourceContextEnabled != settings.extendedSourceContextEnabled
                 || settingsComponent!!.extendedSourceContextDepth != settings.extendedSourceContextDepth
+                || settingsComponent!!.assistantActionsEnabled != settings.assistantActionsEnabled
                 || settingsComponent!!.syntaxAutocorrectionEnabled != settings.syntaxAutocorrectionEnabled
     }
 
@@ -44,6 +45,7 @@ class AppSettingsConfigurable : Configurable {
         settings.predictiveGenerationEnabled = settingsComponent!!.predictiveGenerationEnabled
         settings.extendedSourceContextEnabled = settingsComponent!!.extendedSourceContextEnabled
         settings.extendedSourceContextDepth = settingsComponent!!.extendedSourceContextDepth
+        settings.assistantActionsEnabled = settingsComponent!!.assistantActionsEnabled
         settings.syntaxAutocorrectionEnabled = settingsComponent!!.syntaxAutocorrectionEnabled
     }
 
@@ -56,6 +58,7 @@ class AppSettingsConfigurable : Configurable {
         settingsComponent!!.predictiveGenerationEnabled = settings.predictiveGenerationEnabled
         settingsComponent!!.extendedSourceContextEnabled = settings.extendedSourceContextEnabled
         settingsComponent!!.extendedSourceContextDepth = settings.extendedSourceContextDepth
+        settingsComponent!!.assistantActionsEnabled = settings.assistantActionsEnabled
         settingsComponent!!.syntaxAutocorrectionEnabled = settings.syntaxAutocorrectionEnabled
     }
 }

@@ -8,6 +8,7 @@ import ai.codemaker.jetbrains.assistant.Message
 import ai.codemaker.jetbrains.assistant.Role
 import ai.codemaker.jetbrains.file.FileExtensions
 import ai.codemaker.jetbrains.service.CodeMakerService
+import ai.codemaker.jetbrains.settings.AppSettingsState
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.DumbAware
@@ -16,10 +17,8 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
-import com.intellij.ui.jcef.JBCefApp
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.ui.JBUI
-import org.cef.browser.CefBrowser
 import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
 import org.intellij.markdown.html.HtmlGenerator
 import org.intellij.markdown.parser.MarkdownParser
@@ -45,8 +44,8 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
     class AssistantWindow(val project: Project) {
 
         val contentPanel = JPanel()
-        val chatScreen = JBCefBrowser()
-        val messageTextField = JTextField()
+        private val chatScreen = JBCefBrowser()
+        private val messageTextField = JTextField()
 
         val messages = ArrayList<Message>()
 
@@ -58,10 +57,6 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
         }
 
         private fun createChatPanel(): Component {
-            if (!JBCefApp.isSupported()) {
-                // TODO log warning
-            }
-
             chatScreen.loadHTML(chatHtml())
             return chatScreen.component
         }
@@ -100,7 +95,9 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
                     val fileEditorManager = FileEditorManager.getInstance(project)
                     val file = fileEditorManager.getSelectedEditor()?.file
 
-                    if (file != null && FileExtensions.isSupported(file.extension)) {
+                    val isAssistantActionsEnabled = AppSettingsState.instance.assistantActionsEnabled
+
+                    if (isAssistantActionsEnabled && file != null && FileExtensions.isSupported(file.extension)) {
                         val output = service.assistantCodeCompletion(input, file)
                         addMessage(output, Role.Assistant)
                     } else {
@@ -113,13 +110,37 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
 
         private fun appendMessage(message: Message) {
             val content = renderMarkdown(message.content).replace("\"", "\\\"")
-            val assistant = if (message.role == Role.Assistant)  "true" else "false"
+            val assistant = if (message.role == Role.Assistant) "true" else "false"
             chatScreen.cefBrowser.executeJavaScript("window.append(\"$content\", ${assistant})", "", 0)
         }
 
         private fun chatHtml(): String {
             // language=HTML
             return """
+                <style>
+                    .container {
+                        margin: 10px;
+                        padding: 10px;
+                        border: 0px;
+                        border-radius: 10px;                        
+                        color: #f8f8f2;
+                        text-align: justify;
+                    }
+                    
+                    .user {
+                        background-color: #323232;
+                    }
+                    
+                    .assistant {
+                        background-color: #464646;
+                    }
+                    
+                    .label {                        
+                        font-size:x-small;
+                        color:#e7e7d2;
+                        text-align: left;
+                    }
+                </style>
                 <div id="container" style="width:100%; height:100%;background-color:#323232">
                   <div id="chat">
                   </div>
@@ -127,10 +148,14 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
                 </div>
                 <script>
                     window.append = function(body, assistant) {
-                        let container = document.createElement("div");
-                        let color = assistant ? "#464646" : "#323232";
-                        container.style.cssText = "padding:10px;border:0px;border-radius:5px;margin:10px;color:#f8f8f2;background-color:" + color + ";";
-                        container.innerHTML = "<div>" + (assistant ? "Assistant" : "User")   + "</div>"
+                        let container = document.createElement("div");                        
+                        container.className = "container";
+                        container.classList.add("container", assistant ? "assistant" : "user");
+                        
+                        let label = document.createElement("div");
+                        label.innerText = (assistant ? "Assistant" : "User");
+                        label.classList.add("label");
+                        container.appendChild(label)
                         
                         let message = document.createElement("div");                        
                         message.innerHTML = body;
