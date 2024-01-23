@@ -33,8 +33,12 @@ import javax.swing.JButton
 import javax.swing.JPanel
 import javax.swing.JTextField
 
-
 class AssistantWindowFactory : ToolWindowFactory, DumbAware {
+
+    object AssistantWindowFactory {
+        val ASSISTANT_VIEW = "/webview/assistant.html"
+    }
+
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val assistantWindow = AssistantWindow(project)
         val content: Content = ContentFactory.getInstance().createContent(assistantWindow.contentPanel, "", false)
@@ -57,7 +61,7 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
         }
 
         private fun createChatPanel(): Component {
-            chatScreen.loadHTML(chatHtml())
+            chatScreen.loadHTML(assistantView())
             return chatScreen.component
         }
 
@@ -110,76 +114,14 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
 
         private fun appendMessage(message: Message) {
             val content = renderMarkdown(message.content).replace("\"", "\\\"")
-            val assistant = if (message.role == Role.Assistant) "true" else "false"
+            val assistant = (message.role == Role.Assistant).toString()
             chatScreen.cefBrowser.executeJavaScript("window.append(\"$content\", ${assistant})", "", 0)
         }
 
-        private fun chatHtml(): String {
-            // language=HTML
-            return """
-                <style>
-                    .root {
-                        background-color:#323232;
-                    }
-                    
-                    .container {
-                        width: 100%;
-                        height: 100%;
-                    }
-                    
-                    .card {
-                        margin: 10px;
-                        padding: 10px 15px 10px 15px;
-                        border: 0px;
-                        border-radius: 10px;                        
-                        color: #f8f8f2;
-                        text-align: justify;
-                    }
-                    
-                    .user {
-                        background-color: #323232;
-                    }
-                    
-                    .assistant {
-                        background-color: #464646;
-                    }
-                    
-                    .label {                        
-                        font-size:x-small;
-                        color:#e7e7d2;
-                        text-align: left;
-                    }
-                    
-                    .message {
-                    }
-                </style>
-                <div id="root">
-                    <div id="container">
-                      <div id="chat">
-                      </div>
-                      <span id="anchor"></span>
-                    </div>
-                </div>
-                <script>
-                    window.append = function(body, assistant) {
-                        let card = document.createElement("div");                        
-                        card.classList.add("card", assistant ? "assistant" : "user");
-                        
-                        let label = document.createElement("div");
-                        label.innerText = (assistant ? "Assistant" : "User");
-                        label.classList.add("label");
-                        card.appendChild(label)
-                        
-                        let message = document.createElement("div");
-                        message.classList.add("message");
-                        message.innerHTML = body;
-                        card.appendChild(message);
-                        
-                        document.getElementById("chat").appendChild(card);
-                        document.getElementById("anchor").scrollIntoView({ behavior: "smooth"});
-                    }
-                </script>
-                """.trimIndent()
+        private fun assistantView(): String {
+            return AssistantWindowFactory::class.java
+                    .getResource(AssistantWindowFactory.ASSISTANT_VIEW)!!
+                    .readText()
         }
 
         private fun renderMarkdown(source: String): String {
