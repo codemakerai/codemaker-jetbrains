@@ -6,6 +6,7 @@ package ai.codemaker.jetbrains.window
 
 import ai.codemaker.jetbrains.assistant.Message
 import ai.codemaker.jetbrains.assistant.Role
+import ai.codemaker.jetbrains.file.FileExtensions
 import ai.codemaker.jetbrains.service.CodeMakerService
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -81,10 +82,9 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
 
         private fun addMessage(input: String, role: Role) {
             // TODO cap message size
-            messages.add(Message(UUID.randomUUID().toString(), input, role, Date()))
-
-            val content = renderMarkdown(input).replace("\"", "\\\"")
-            chatScreen.cefBrowser.executeJavaScript("window.append(\"$content\")", "", 0)
+            val message = Message(UUID.randomUUID().toString(), input, role, Date())
+            messages.add(message)
+            appendMessage(message)
         }
 
         private fun sendMessage() {
@@ -100,31 +100,43 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
                     val fileEditorManager = FileEditorManager.getInstance(project)
                     val file = fileEditorManager.getSelectedEditor()?.file
 
-                    if (file != null) {
-                        println("Processing file: " + file.path)
+                    if (file != null && FileExtensions.isSupported(file.extension)) {
+                        val output = service.assistantCodeCompletion(input, file)
+                        addMessage(output, Role.Assistant)
+                    } else {
+                        val output = service.assistantCompletion(input)
+                        addMessage(output, Role.Assistant)
                     }
-
-                    val output = service.assistantCodeCompletion(input, file)
-
-                    addMessage(output, Role.Assistant)
                 }
             }
+        }
+
+        private fun appendMessage(message: Message) {
+            val content = renderMarkdown(message.content).replace("\"", "\\\"")
+            val assistant = if (message.role == Role.Assistant)  "true" else "false"
+            chatScreen.cefBrowser.executeJavaScript("window.append(\"$content\", ${assistant})", "", 0)
         }
 
         private fun chatHtml(): String {
             // language=HTML
             return """
-                <div id="container" style="width:100%; height:100%;">
+                <div id="container" style="width:100%; height:100%;background-color:#323232">
                   <div id="chat">
                   </div>
                   <span id="anchor"></span>
                 </div>
                 <script>
-                    window.append = function(body) {
-                        let message = document.createElement("div");                                                
-                        message.style.cssText = "background-color:#f1f1f1;padding:10px;border:2px solid #dedede;border-radius:5px;margin:10px 0;";
+                    window.append = function(body, assistant) {
+                        let container = document.createElement("div");
+                        let color = assistant ? "#464646" : "#323232";
+                        container.style.cssText = "padding:10px;border:0px;border-radius:5px;margin:10px;color:#f8f8f2;background-color:" + color + ";";
+                        container.innerHTML = "<div>" + (assistant ? "Assistant" : "User")   + "</div>"
+                        
+                        let message = document.createElement("div");                        
                         message.innerHTML = body;
-                        document.getElementById("chat").appendChild(message);
+                        container.appendChild(message);
+                        
+                        document.getElementById("chat").appendChild(container);
                         document.getElementById("anchor").scrollIntoView({ behavior: "smooth"});
                     }
                 </script>
