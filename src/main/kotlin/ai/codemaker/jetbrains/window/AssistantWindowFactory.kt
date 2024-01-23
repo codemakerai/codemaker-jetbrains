@@ -134,7 +134,6 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
                         border-radius: 10px;                        
                         color: #f8f8f2;
                         text-align: justify;
-                        box-shadow: 2px 2px 1px black;
                     }
                     
                     .user {
