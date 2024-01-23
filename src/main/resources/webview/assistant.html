@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .root {
+            background-color: #323232;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .card {
+            margin: 10px;
+            padding: 10px 15px 10px 15px;
+            border: 0px;
+            border-radius: 10px;
+            color: #f8f8f2;
+        }
+
+        .user {
+            background-color: #323232;
+        }
+
+        .assistant {
+            background-color: #464646;
+        }
+
+        .label {
+            font-size: x-small;
+            color: #e7e7d2;
+            text-align: left;
+        }
+
+        .message {
+            text-align: justify;
+        }
+
+        .message pre {
+            text-align: left;
+            white-space: pre-wrap;
+        }
+
+        .message code {
+            text-align: left;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+<div id="root">
+    <div id="container">
+        <div id="chat">
+        </div>
+        <span id="anchor"></span>
+    </div>
+</div>
+<script>
+    window.append = function (body, assistant) {
+        let card = document.createElement("div");
+        card.classList.add("card", assistant ? "assistant" : "user");
+
+        let label = document.createElement("div");
+        label.innerText = (assistant ? "Assistant" : "User");
+        label.classList.add("label");
+        card.appendChild(label)
+
+        let message = document.createElement("div");
+        message.classList.add("message");
+        message.innerHTML = body;
+        card.appendChild(message);
+
+        document.getElementById("chat").appendChild(card);
+        document.getElementById("anchor").scrollIntoView({behavior: "smooth"});
+    }
+</script>
+</body>
+</html>

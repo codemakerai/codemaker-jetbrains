@@ -69,6 +69,30 @@ class CodeMakerService(private val project: Project) {
         process(Mode.FIX_SYNTAX, "Fixing code", path, modify, codePath)
     }
 
+    fun assistantCompletion(message: String): String {
+        val assistantCompletionResponse = client.assistantCompletion(createAssistantCompletionRequest(message))
+        return assistantCompletionResponse.message
+    }
+
+    fun assistantCodeCompletion(message: String, path: VirtualFile?): String {
+        try {
+            val source = readFile(path!!) ?: return ""
+            val language = FileExtensions.languageFromExtension(path.extension)
+
+            val response = client.assistantCodeCompletion(createAssistantCodeCompletionRequest(message, language!!, source))
+
+            return response.message
+        } catch (e: ProcessCanceledException) {
+            throw e
+        } catch (e: UnauthorizedException) {
+            logger.error("Unauthorized request. Configure the the API Key in the Preferences > Tools > CodeMaker AI menu.", e)
+            throw e
+        } catch (e: Exception) {
+            logger.error("Failed to process assistant completion.", e)
+            return ""
+        }
+    }
+
     fun completion(path: VirtualFile, offset: Int, isMultilineAutocompletion: Boolean): String {
         try {
             val source = readFile(path) ?: return ""
@@ -396,6 +420,14 @@ class CodeMakerService(private val project: Project) {
                 Input(source),
                 Options(null, "@$offset", null, false, isMultilineAutocompletion, contextId)
         )
+    }
+
+    private fun createAssistantCompletionRequest(message: String): AssistantCompletionRequest {
+        return AssistantCompletionRequest(message)
+    }
+
+    private fun createAssistantCodeCompletionRequest(message: String, language: Language, source: String): AssistantCodeCompletionRequest {
+        return AssistantCodeCompletionRequest(message, language, Input(source))
     }
 
     private fun isExtendedContextSupported(mode: Mode): Boolean {

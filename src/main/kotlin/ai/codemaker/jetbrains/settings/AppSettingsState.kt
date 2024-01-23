@@ -34,6 +34,9 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     var extendedSourceContextDepth: Int = 1
 
     @JvmField
+    var assistantActionsEnabled: Boolean = true
+
+    @JvmField
     var syntaxAutocorrectionEnabled: Boolean = false
 
     override fun getState(): AppSettingsState {

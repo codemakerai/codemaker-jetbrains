@@ -21,6 +21,7 @@ class AppSettingsComponent {
     private val predictiveGenerationEnabledCheck = JBCheckBox()
     private val extendedSourceContextEnabledCheck = JBCheckBox()
     private val extendedSourceContextDepthCombo = ComboBox(arrayOf(1, 2, 3))
+    private val assistantActionsEnabledCheck = JBCheckBox()
     private val syntaxAutocorrectionEnabledCheck = JBCheckBox()
 
     init {
@@ -35,6 +36,8 @@ class AppSettingsComponent {
                 .addSeparator()
                 .addLabeledComponent(JBLabel("Enable extended source context: "), extendedSourceContextEnabledCheck, 1, false)
                 .addLabeledComponent(JBLabel("Extended source context depth: "), extendedSourceContextDepthCombo, 1, false)
+                .addSeparator()
+                .addLabeledComponent(JBLabel("Enable assistant actions: "), assistantActionsEnabledCheck, 1, false)
                 .addSeparator()
                 .addLabeledComponent(JBLabel("Enable syntax autocorrection: "), syntaxAutocorrectionEnabledCheck, 1, false)
                 .addComponentFillVertically(JPanel(), 0)
@@ -81,6 +84,12 @@ class AppSettingsComponent {
         get() = extendedSourceContextDepthCombo.item
         set(item) {
             extendedSourceContextDepthCombo.item = item
+        }
+
+    var assistantActionsEnabled: Boolean
+        get() = assistantActionsEnabledCheck.isSelected
+        set(enabled) {
+            assistantActionsEnabledCheck.isSelected = enabled
         }
 
     var syntaxAutocorrectionEnabled: Boolean
