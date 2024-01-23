@@ -118,13 +118,23 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
             // language=HTML
             return """
                 <style>
+                    .root {
+                        background-color:#323232;
+                    }
+                    
                     .container {
+                        width: 100%;
+                        height: 100%;
+                    }
+                    
+                    .card {
                         margin: 10px;
-                        padding: 10px;
+                        padding: 10px 15px 10px 15px;
                         border: 0px;
                         border-radius: 10px;                        
                         color: #f8f8f2;
                         text-align: justify;
+                        box-shadow: 2px 2px 1px black;
                     }
                     
                     .user {
@@ -140,28 +150,33 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
                         color:#e7e7d2;
                         text-align: left;
                     }
+                    
+                    .message {
+                    }
                 </style>
-                <div id="container" style="width:100%; height:100%;background-color:#323232">
-                  <div id="chat">
-                  </div>
-                  <span id="anchor"></span>
+                <div id="root">
+                    <div id="container">
+                      <div id="chat">
+                      </div>
+                      <span id="anchor"></span>
+                    </div>
                 </div>
                 <script>
                     window.append = function(body, assistant) {
-                        let container = document.createElement("div");                        
-                        container.className = "container";
-                        container.classList.add("container", assistant ? "assistant" : "user");
+                        let card = document.createElement("div");                        
+                        card.classList.add("card", assistant ? "assistant" : "user");
                         
                         let label = document.createElement("div");
                         label.innerText = (assistant ? "Assistant" : "User");
                         label.classList.add("label");
-                        container.appendChild(label)
+                        card.appendChild(label)
                         
-                        let message = document.createElement("div");                        
+                        let message = document.createElement("div");
+                        message.classList.add("message");
                         message.innerHTML = body;
-                        container.appendChild(message);
+                        card.appendChild(message);
                         
-                        document.getElementById("chat").appendChild(container);
+                        document.getElementById("chat").appendChild(card);
                         document.getElementById("anchor").scrollIntoView({ behavior: "smooth"});
                     }
                 </script>
