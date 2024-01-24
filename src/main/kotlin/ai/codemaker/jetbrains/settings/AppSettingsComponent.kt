@@ -37,7 +37,7 @@ class AppSettingsComponent {
                 .addLabeledComponent(JBLabel("Enable extended source context: "), extendedSourceContextEnabledCheck, 1, false)
                 .addLabeledComponent(JBLabel("Extended source context depth: "), extendedSourceContextDepthCombo, 1, false)
                 .addSeparator()
-                .addLabeledComponent(JBLabel("Enable assistant actions: "), assistantActionsEnabledCheck, 1, false)
+                .addLabeledComponent(JBLabel("Enable assistant contextual operations: "), assistantActionsEnabledCheck, 1, false)
                 .addSeparator()
                 .addLabeledComponent(JBLabel("Enable syntax autocorrection: "), syntaxAutocorrectionEnabledCheck, 1, false)
                 .addComponentFillVertically(JPanel(), 0)
