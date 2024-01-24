@@ -19,6 +19,7 @@
         <h3>Features</h3>
         <p>Fallowing operations are supported:</p>
         <uL>
+            <li>Coding Assistant.</li>
             <li>Context-aware inline source code generation.</li>
             <li>Context-aware source code generation.</li>
             <li>Generating source code documentation.</li>
@@ -40,11 +41,11 @@
 
         <h3>Getting started</h3>
         <ol>
-            <li>Sign up for the Early Access Program at <a href="https://codemaker.ai">https://codemaker.ai</a>.</li>
-            <li>Receive the Early Access Program invitation email.</li>
+            <li>Sign at <a href="https://codemaker.ai">https://codemaker.ai</a>.</li>
+            <li>Generate API Key.</li>
             <li>Install the plugin from Jetbrains Marketplace.</li>
             <li>Configure the API Key in Preferences > Tools > CodeMaker AI.</li>
-            <li>Run the commands.</li>
+            <li>Use it.</li>
         </ol>
   ]]></description>
 
