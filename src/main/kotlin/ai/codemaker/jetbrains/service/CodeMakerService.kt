@@ -81,6 +81,10 @@ class CodeMakerService(private val project: Project) {
 
             val response = client.assistantCodeCompletion(createAssistantCodeCompletionRequest(message, language!!, source))
 
+            if (response.output.source.isNotEmpty()) {
+                writeFile(path, response.output.source)
+            }
+
             return response.message
         } catch (e: ProcessCanceledException) {
             throw e
