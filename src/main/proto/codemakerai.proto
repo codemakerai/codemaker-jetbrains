@@ -89,6 +89,10 @@ message CompletionOptions {
   repeated CodeSnippetContext codeSnippetContexts = 3;
 }
 
+message AssistantCodeCompletionOptions {
+  string contextId = 1;
+}
+
 message PredictionOptions {
   string contextId = 1;
 }
@@ -116,6 +120,7 @@ message AssistantCodeCompletionRequest {
   string message = 1;
   Language language = 2;
   Input input = 3;
+  AssistantCodeCompletionOptions options = 4;
 }
 
 message AssistantCodeCompletionResponse {

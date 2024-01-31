@@ -12,10 +12,13 @@ public class AssistantCodeCompletionRequest {
 
     private final Input input;
 
-    public AssistantCodeCompletionRequest(String message, Language language, Input input) {
+    private final Options options;
+
+    public AssistantCodeCompletionRequest(String message, Language language, Input input, Options options) {
         this.message = message;
         this.language = language;
         this.input = input;
+        this.options = options;
     }
 
     public String getMessage() {
@@ -28,5 +31,9 @@ public class AssistantCodeCompletionRequest {
 
     public Input getInput() {
         return input;
+    }
+
+    public Options getOptions() {
+        return options;
     }
 }

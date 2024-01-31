@@ -79,7 +79,9 @@ class CodeMakerService(private val project: Project) {
             val source = readFile(path!!) ?: return ""
             val language = FileExtensions.languageFromExtension(path.extension)
 
-            val response = client.assistantCodeCompletion(createAssistantCodeCompletionRequest(message, language!!, source))
+            val contextId = registerContext(client, language!!, source, path.path)
+
+            val response = client.assistantCodeCompletion(createAssistantCodeCompletionRequest(message, language!!, source, contextId))
 
             if (response.output.source.isNotEmpty()) {
                 writeFile(path, response.output.source)
@@ -430,8 +432,13 @@ class CodeMakerService(private val project: Project) {
         return AssistantCompletionRequest(message)
     }
 
-    private fun createAssistantCodeCompletionRequest(message: String, language: Language, source: String): AssistantCodeCompletionRequest {
-        return AssistantCodeCompletionRequest(message, language, Input(source))
+    private fun createAssistantCodeCompletionRequest(message: String, language: Language, source: String, contextId: String?): AssistantCodeCompletionRequest {
+        return AssistantCodeCompletionRequest(
+                message,
+                language,
+                Input(source),
+                Options(null, null, null, false, false, contextId)
+        )
     }
 
     private fun isExtendedContextSupported(mode: Mode): Boolean {
