@@ -109,10 +109,14 @@ public final class DefaultClient implements Client {
                 .build();
     }
 
-    private Codemakerai.AssistantCodeCompletionOptions createAssistantCodeCompetionOptions(Options options) {
-        return Codemakerai.AssistantCodeCompletionOptions.newBuilder()
-                .setContextId(options.getContextId())
-                .build();
+    private Codemakerai.AssistantCodeCompletionOptions createAssistantCodeCompletionOptions(Options options) {
+        final Codemakerai.AssistantCodeCompletionOptions.Builder builder = Codemakerai.AssistantCodeCompletionOptions.newBuilder();
+
+        final Optional<String> contextId = Optional.ofNullable(options.getContextId());
+
+        contextId.ifPresent(builder::setContextId);
+
+        return builder.build();
     }
 
     private static Codemakerai.Mode mapMode(Mode mode) {
@@ -383,7 +387,7 @@ public final class DefaultClient implements Client {
                 .setMessage(request.getMessage())
                 .setLanguage(mapLanguage(request.getLanguage()))
                 .setInput(input)
-                .setOptions(createAssistantCodeCompetionOptions(request.getOptions()))
+                .setOptions(createAssistantCodeCompletionOptions(request.getOptions()))
                 .build();
     }
 
