@@ -22,6 +22,7 @@ enum Mode {
 
 enum Language {
   SQL = 0;
+  C = 1;
   JAVA = 7;
   JAVASCRIPT = 9;
   CSHARP = 13;
