@@ -60,6 +60,8 @@ public final class DefaultClient implements Client {
 
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
+    private static final int DEFAULT_TIMEOUT_IN_SECONDS = 120;
+
     private final CodemakerServiceGrpc.CodemakerServiceBlockingStub client;
 
     private final Config config;
@@ -251,7 +253,7 @@ public final class DefaultClient implements Client {
     }
 
     private CodemakerServiceGrpc.CodemakerServiceBlockingStub client() {
-        return client.withDeadlineAfter(120, TimeUnit.SECONDS);
+        return client.withDeadlineAfter(DEFAULT_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
     }
 
     private Codemakerai.DiscoverSourceContextRequest createDiscoverContextRequest(DiscoverContextRequest request) {
