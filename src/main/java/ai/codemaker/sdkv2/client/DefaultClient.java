@@ -48,6 +48,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -79,6 +80,317 @@ public final class DefaultClient implements Client {
                         new AuthenticationInterceptor(apiKeyProvider)
                 )
         );
+    }
+
+    @Override
+    public AssistantCompletionResponse assistantCompletion(AssistantCompletionRequest request) {
+        final Codemakerai.AssistantCompletionRequest assistantCompletionRequest = createAssistantCompletionRequest(request);
+
+        final Codemakerai.AssistantCompletionResponse assistantCompletionResponse = doAssistantCompletion(assistantCompletionRequest);
+
+        return createAssistantCompletionResponse(assistantCompletionResponse);
+    }
+
+    @Override
+    public AssistantCodeCompletionResponse assistantCodeCompletion(AssistantCodeCompletionRequest request) {
+        final Codemakerai.AssistantCodeCompletionRequest assistantCodeCompletionRequest = createAssistantCodeCompletionRequest(request);
+
+        final Codemakerai.AssistantCodeCompletionResponse assistantCodeCompletionResponse = doAssistantCodeCompletion(assistantCodeCompletionRequest);
+
+        return createAssistantCodeCompletionResponse(assistantCodeCompletionResponse);
+    }
+
+    @Override
+    public CompletionResponse completion(CompletionRequest request) {
+        final Codemakerai.CompletionRequest completionRequest = createCompletionRequest(request);
+
+        final Codemakerai.CompletionResponse completionResponse = doCompletion(completionRequest);
+
+        return createCompletionResponse(completionResponse);
+    }
+
+    @Override
+    public ProcessResponse process(ProcessRequest request) {
+        final Codemakerai.ProcessRequest processRequest = createProcessRequest(request);
+
+        final Codemakerai.ProcessResponse processResponse = doProcess(processRequest);
+
+        return createProcessResponse(processResponse);
+    }
+
+    @Override
+    public PredictResponse predict(PredictRequest request) {
+        final Codemakerai.PredictRequest predictRequest = createPredictRequest(request);
+
+        final Codemakerai.PredictResponse predictResponse = doPredict(predictRequest);
+
+        return createPredictResponse(predictResponse);
+    }
+
+    @Override
+    public DiscoverContextResponse discoverContext(DiscoverContextRequest request) {
+        final Codemakerai.DiscoverSourceContextRequest discoverContextRequest = createDiscoverContextRequest(request);
+
+        final Codemakerai.DiscoverSourceContextResponse discoverContextResponse = doDiscoverContext(discoverContextRequest);
+
+        return createDiscoverContextResponse(discoverContextResponse);
+    }
+
+    @Override
+    public CreateContextResponse createContext(CreateContextRequest request) {
+        final Codemakerai.CreateSourceContextRequest createContextRequest = createCreateContextRequest(request);
+
+        final Codemakerai.CreateSourceContextResponse createContextResponse = doCreateContext(createContextRequest);
+
+        return createCreateContextResponse(createContextResponse);
+    }
+
+    @Override
+    public RegisterContextResponse registerContext(RegisterContextRequest request) {
+        final Codemakerai.RegisterSourceContextRequest registerContextRequest = createRegisterContextRequest(request);
+
+        final Codemakerai.RegisterSourceContextResponse registerContextResponse = doRegisterContext(registerContextRequest);
+
+        return createRegisterContextResponse(registerContextResponse);
+    }
+
+    private Codemakerai.DiscoverSourceContextResponse doDiscoverContext(Codemakerai.DiscoverSourceContextRequest request) {
+        try {
+            return client().discoverContext(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private Codemakerai.CreateSourceContextResponse doCreateContext(Codemakerai.CreateSourceContextRequest request) {
+        try {
+            return client().createContext(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private Codemakerai.RegisterSourceContextResponse doRegisterContext(Codemakerai.RegisterSourceContextRequest request) {
+        try {
+            return client().registerContext(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private Codemakerai.AssistantCompletionResponse doAssistantCompletion(Codemakerai.AssistantCompletionRequest request) {
+        try {
+            return client().assistantCompletion(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private Codemakerai.AssistantCodeCompletionResponse doAssistantCodeCompletion(Codemakerai.AssistantCodeCompletionRequest request) {
+        try {
+            return client().assistantCodeCompletion(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private Codemakerai.CompletionResponse doCompletion(Codemakerai.CompletionRequest request) {
+        try {
+            return client().completion(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private Codemakerai.ProcessResponse doProcess(Codemakerai.ProcessRequest request) {
+        try {
+            return client().process(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private Codemakerai.PredictResponse doPredict(Codemakerai.PredictRequest request) {
+        try {
+            return client().predict(request);
+        } catch (StatusRuntimeException e) {
+            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
+            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
+                throw new UnauthorizedException("Unauthorized request.");
+            }
+            throw e;
+        }
+    }
+
+    private CodemakerServiceGrpc.CodemakerServiceBlockingStub client() {
+        return client.withDeadlineAfter(120, TimeUnit.SECONDS);
+    }
+
+    private Codemakerai.DiscoverSourceContextRequest createDiscoverContextRequest(DiscoverContextRequest request) {
+        final Codemakerai.Input input = createInput(request.getContext().getInput());
+
+        return Codemakerai.DiscoverSourceContextRequest.newBuilder()
+                .setContext(Codemakerai.SourceContext.newBuilder()
+                        .setLanguage(mapLanguage(request.getContext().getLanguage()))
+                        .setInput(input)
+                        .setMetadata(Codemakerai.Metadata.newBuilder()
+                                .setPath(request.getContext().getPath())
+                                .build())
+                        .build())
+                .build();
+    }
+
+    private DiscoverContextResponse createDiscoverContextResponse(Codemakerai.DiscoverSourceContextResponse response) {
+        final Collection<RequiredContext> requiredContexts = response.getContextsList().stream()
+                .map(this::mapRequiredContext)
+                .toList();
+        return new DiscoverContextResponse(requiredContexts, response.getRequiresProcessing());
+    }
+
+    private Codemakerai.CreateSourceContextRequest createCreateContextRequest(CreateContextRequest request) {
+        return Codemakerai.CreateSourceContextRequest.newBuilder().build();
+    }
+
+    private CreateContextResponse createCreateContextResponse(Codemakerai.CreateSourceContextResponse response) {
+        return new CreateContextResponse(response.getId());
+    }
+
+    private Codemakerai.RegisterSourceContextRequest createRegisterContextRequest(RegisterContextRequest request) {
+        final List<Codemakerai.SourceContext> sourceContexts = request.getContexts().stream()
+                .map(context -> {
+                            final Codemakerai.Input input = createInput(context.getInput());
+                            return Codemakerai.SourceContext.newBuilder()
+                                    .setLanguage(mapLanguage(context.getLanguage()))
+                                    .setInput(input)
+                                    .setMetadata(Codemakerai.Metadata.newBuilder()
+                                            .setPath(context.getPath())
+                                            .build())
+                                    .build();
+                        }
+                )
+                .toList();
+        return Codemakerai.RegisterSourceContextRequest.newBuilder()
+                .setId(request.getId())
+                .addAllSourceContexts(sourceContexts)
+                .build();
+    }
+
+    private RegisterContextResponse createRegisterContextResponse(Codemakerai.RegisterSourceContextResponse response) {
+        return new RegisterContextResponse();
+    }
+
+    private Codemakerai.AssistantCompletionRequest createAssistantCompletionRequest(AssistantCompletionRequest request) {
+        return Codemakerai.AssistantCompletionRequest.newBuilder()
+                .setMessage(request.getMessage())
+                .build();
+    }
+
+    private AssistantCompletionResponse createAssistantCompletionResponse(Codemakerai.AssistantCompletionResponse response) {
+        return new AssistantCompletionResponse(response.getMessage());
+    }
+
+    private Codemakerai.AssistantCodeCompletionRequest createAssistantCodeCompletionRequest(AssistantCodeCompletionRequest request) {
+        final Codemakerai.Input input = createInput(request.getInput());
+
+        return Codemakerai.AssistantCodeCompletionRequest.newBuilder()
+                .setMessage(request.getMessage())
+                .setLanguage(mapLanguage(request.getLanguage()))
+                .setInput(input)
+                .setOptions(createAssistantCodeCompletionOptions(request.getOptions()))
+                .build();
+    }
+
+    private AssistantCodeCompletionResponse createAssistantCodeCompletionResponse(Codemakerai.AssistantCodeCompletionResponse response) {
+        final Codemakerai.Source content = response.getOutput().getSource();
+        final String output = decodeOutput(content);
+
+        return new AssistantCodeCompletionResponse(response.getMessage(), new Output(output));
+    }
+
+    private Codemakerai.CompletionRequest createCompletionRequest(CompletionRequest request) {
+        final Codemakerai.Input input = createInput(request.getInput());
+
+        return Codemakerai.CompletionRequest.newBuilder()
+                .setLanguage(mapLanguage(request.getLanguage()))
+                .setInput(input)
+                .setOptions(createCompletionOptions(request.getOptions()))
+                .build();
+    }
+
+    private CompletionResponse createCompletionResponse(Codemakerai.CompletionResponse response) {
+        final Codemakerai.Source content = response.getOutput().getSource();
+        final String output = decodeOutput(content);
+
+        return new CompletionResponse(new Output(output));
+    }
+
+    private Codemakerai.ProcessRequest createProcessRequest(ProcessRequest request) {
+        final Codemakerai.Input input = createInput(request.getInput());
+
+        return Codemakerai.ProcessRequest.newBuilder()
+                .setMode(mapMode(request.getMode()))
+                .setLanguage(mapLanguage(request.getLanguage()))
+                .setInput(input)
+                .setOptions(createProcessOptions(request.getOptions()))
+                .build();
+    }
+
+    private ProcessResponse createProcessResponse(Codemakerai.ProcessResponse response) {
+        final Codemakerai.Source content = response.getOutput().getSource();
+        final String output = decodeOutput(content);
+
+        return new ProcessResponse(new Output(output));
+    }
+
+    private Codemakerai.PredictRequest createPredictRequest(PredictRequest request) {
+        final Codemakerai.Input input = createInput(request.getInput());
+
+        return Codemakerai.PredictRequest.newBuilder()
+                .setLanguage(mapLanguage(request.getLanguage()))
+                .setInput(input)
+                .build();
+    }
+
+    private Codemakerai.Input createInput(Input request) {
+        return Codemakerai.Input.newBuilder()
+                .setSource(encodeInput(request))
+                .build();
+    }
+
+    private RequiredContext mapRequiredContext(Codemakerai.RequiredSourceContext requiredContext) {
+        return new RequiredContext(requiredContext.getPath());
+    }
+
+    private PredictResponse createPredictResponse(Codemakerai.PredictResponse response) {
+        return new PredictResponse();
     }
 
     private static Codemakerai.ProcessOptions createProcessOptions(Options options) {
@@ -117,6 +429,36 @@ public final class DefaultClient implements Client {
         contextId.ifPresent(builder::setContextId);
 
         return builder.build();
+    }
+
+    private String decodeOutput(Codemakerai.Source source) {
+        final ByteString content = source.getContent();
+        ByteBuffer output = ByteBuffer.allocate(content.size());
+        content.copyTo(output);
+        output.flip();
+
+        if (source.getEncoding() == Codemakerai.Encoding.GZIP) {
+            output = decompress(output);
+        }
+
+        return DEFAULT_CHARSET.decode(output).toString();
+    }
+
+    private Codemakerai.Source.Builder encodeInput(Input input) {
+        Codemakerai.Encoding encoding = Codemakerai.Encoding.NONE;
+        ByteBuffer content = DEFAULT_CHARSET.encode(input.getSource());
+        final String checksum = checksum(content);
+
+        if (config.isEnableCompression() &&
+                content.remaining() >= config.getMinimumCompressionPayloadSize()) {
+            encoding = Codemakerai.Encoding.GZIP;
+            content = compress(content);
+        }
+
+        return Codemakerai.Source.newBuilder()
+                .setContent(ByteString.copyFrom(content))
+                .setEncoding(encoding)
+                .setChecksum(checksum);
     }
 
     private static Codemakerai.Mode mapMode(Mode mode) {
@@ -196,342 +538,5 @@ public final class DefaultClient implements Client {
         return Hashing.sha256()
                 .hashBytes(content.duplicate())
                 .toString();
-    }
-
-    @Override
-    public AssistantCompletionResponse assistantCompletion(AssistantCompletionRequest request) {
-        final Codemakerai.AssistantCompletionRequest assistantCompletionRequest = createAssistantCompletionRequest(request);
-
-        final Codemakerai.AssistantCompletionResponse assistantCompletionResponse = doAssistantCompletion(assistantCompletionRequest);
-
-        return createAssistantCompletionResponse(assistantCompletionResponse);
-    }
-
-    @Override
-    public AssistantCodeCompletionResponse assistantCodeCompletion(AssistantCodeCompletionRequest request) {
-        final Codemakerai.AssistantCodeCompletionRequest assistantCodeCompletionRequest = createAssistantCodeCompletionRequest(request);
-
-        final Codemakerai.AssistantCodeCompletionResponse assistantCodeCompletionResponse = doAssistantCodeCompletion(assistantCodeCompletionRequest);
-
-        return createAssistantCodeCompletionResponse(assistantCodeCompletionResponse);
-    }
-
-    @Override
-    public CompletionResponse completion(CompletionRequest request) {
-        final Codemakerai.CompletionRequest completionRequest = createCompletionRequest(request);
-
-        final Codemakerai.CompletionResponse completionResponse = doCompletion(completionRequest);
-
-        return createCompletionResponse(completionResponse);
-    }
-
-    @Override
-    public ProcessResponse process(ProcessRequest request) {
-        final Codemakerai.ProcessRequest processRequest = createProcessRequest(request);
-
-        final Codemakerai.ProcessResponse processResponse = doProcess(processRequest);
-
-        return createProcessResponse(processResponse);
-    }
-
-    @Override
-    public PredictResponse predict(PredictRequest request) {
-        final Codemakerai.PredictRequest predictRequest = createPredictRequest(request);
-
-        final Codemakerai.PredictResponse predictResponse = doPredict(predictRequest);
-
-        return createPredictResponse(predictResponse);
-    }
-
-    @Override
-    public DiscoverContextResponse discoverContext(DiscoverContextRequest request) {
-        final Codemakerai.DiscoverSourceContextRequest discoverContextRequest = createDiscoverContextRequest(request);
-
-        final Codemakerai.DiscoverSourceContextResponse discoverContextResponse = doDiscoverContext(discoverContextRequest);
-
-        return createDiscoverContextResponse(discoverContextResponse);
-    }
-
-    private Codemakerai.DiscoverSourceContextRequest createDiscoverContextRequest(DiscoverContextRequest request) {
-        final Codemakerai.Input input = createInput(request.getContext().getInput());
-
-        return Codemakerai.DiscoverSourceContextRequest.newBuilder()
-                .setContext(Codemakerai.SourceContext.newBuilder()
-                        .setLanguage(mapLanguage(request.getContext().getLanguage()))
-                        .setInput(input)
-                        .setMetadata(Codemakerai.Metadata.newBuilder()
-                                .setPath(request.getContext().getPath())
-                                .build())
-                        .build())
-                .build();
-    }
-
-    private Codemakerai.DiscoverSourceContextResponse doDiscoverContext(Codemakerai.DiscoverSourceContextRequest request) {
-        try {
-            return client.discoverContext(request);
-        } catch (StatusRuntimeException e) {
-            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
-            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
-                throw new UnauthorizedException("Unauthorized request.");
-            }
-            throw e;
-        }
-    }
-
-    private DiscoverContextResponse createDiscoverContextResponse(Codemakerai.DiscoverSourceContextResponse response) {
-        final Collection<RequiredContext> requiredContexts = response.getContextsList().stream()
-                .map(this::mapRequiredContext)
-                .toList();
-        return new DiscoverContextResponse(requiredContexts, response.getRequiresProcessing());
-    }
-
-    @Override
-    public CreateContextResponse createContext(CreateContextRequest request) {
-        final Codemakerai.CreateSourceContextRequest createContextRequest = createCreateContextRequest(request);
-
-        final Codemakerai.CreateSourceContextResponse createContextResponse = doCreateContext(createContextRequest);
-
-        return createCreateContextResponse(createContextResponse);
-    }
-
-    private Codemakerai.CreateSourceContextRequest createCreateContextRequest(CreateContextRequest request) {
-        return Codemakerai.CreateSourceContextRequest.newBuilder().build();
-    }
-
-    private Codemakerai.CreateSourceContextResponse doCreateContext(Codemakerai.CreateSourceContextRequest request) {
-        try {
-            return client.createContext(request);
-        } catch (StatusRuntimeException e) {
-            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
-            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
-                throw new UnauthorizedException("Unauthorized request.");
-            }
-            throw e;
-        }
-    }
-
-    private CreateContextResponse createCreateContextResponse(Codemakerai.CreateSourceContextResponse response) {
-        return new CreateContextResponse(response.getId());
-    }
-
-    @Override
-    public RegisterContextResponse registerContext(RegisterContextRequest request) {
-        final Codemakerai.RegisterSourceContextRequest registerContextRequest = createRegisterContextRequest(request);
-
-        final Codemakerai.RegisterSourceContextResponse registerContextResponse = doRegisterContext(registerContextRequest);
-
-        return createRegisterContextResponse(registerContextResponse);
-    }
-
-    private Codemakerai.RegisterSourceContextRequest createRegisterContextRequest(RegisterContextRequest request) {
-        final List<Codemakerai.SourceContext> sourceContexts = request.getContexts().stream()
-                .map(context -> {
-                            final Codemakerai.Input input = createInput(context.getInput());
-                            return Codemakerai.SourceContext.newBuilder()
-                                    .setLanguage(mapLanguage(context.getLanguage()))
-                                    .setInput(input)
-                                    .setMetadata(Codemakerai.Metadata.newBuilder()
-                                            .setPath(context.getPath())
-                                            .build())
-                                    .build();
-                        }
-                )
-                .toList();
-        return Codemakerai.RegisterSourceContextRequest.newBuilder()
-                .setId(request.getId())
-                .addAllSourceContexts(sourceContexts)
-                .build();
-    }
-
-    private Codemakerai.RegisterSourceContextResponse doRegisterContext(Codemakerai.RegisterSourceContextRequest request) {
-        try {
-            return client.registerContext(request);
-        } catch (StatusRuntimeException e) {
-            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
-            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
-                throw new UnauthorizedException("Unauthorized request.");
-            }
-            throw e;
-        }
-    }
-
-    private RegisterContextResponse createRegisterContextResponse(Codemakerai.RegisterSourceContextResponse response) {
-        return new RegisterContextResponse();
-    }
-
-    private Codemakerai.AssistantCompletionRequest createAssistantCompletionRequest(AssistantCompletionRequest request) {
-        return Codemakerai.AssistantCompletionRequest.newBuilder()
-                .setMessage(request.getMessage())
-                .build();
-    }
-
-    private Codemakerai.AssistantCompletionResponse doAssistantCompletion(Codemakerai.AssistantCompletionRequest request) {
-        try {
-            return client.assistantCompletion(request);
-        } catch (StatusRuntimeException e) {
-            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
-            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
-                throw new UnauthorizedException("Unauthorized request.");
-            }
-            throw e;
-        }
-    }
-
-    private AssistantCompletionResponse createAssistantCompletionResponse(Codemakerai.AssistantCompletionResponse response) {
-        return new AssistantCompletionResponse(response.getMessage());
-    }
-
-    private Codemakerai.AssistantCodeCompletionRequest createAssistantCodeCompletionRequest(AssistantCodeCompletionRequest request) {
-        final Codemakerai.Input input = createInput(request.getInput());
-
-        return Codemakerai.AssistantCodeCompletionRequest.newBuilder()
-                .setMessage(request.getMessage())
-                .setLanguage(mapLanguage(request.getLanguage()))
-                .setInput(input)
-                .setOptions(createAssistantCodeCompletionOptions(request.getOptions()))
-                .build();
-    }
-
-    private Codemakerai.AssistantCodeCompletionResponse doAssistantCodeCompletion(Codemakerai.AssistantCodeCompletionRequest request) {
-        try {
-            return client.assistantCodeCompletion(request);
-        } catch (StatusRuntimeException e) {
-            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
-            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
-                throw new UnauthorizedException("Unauthorized request.");
-            }
-            throw e;
-        }
-    }
-
-    private AssistantCodeCompletionResponse createAssistantCodeCompletionResponse(Codemakerai.AssistantCodeCompletionResponse response) {
-        final Codemakerai.Source content = response.getOutput().getSource();
-        final String output = decodeOutput(content);
-
-        return new AssistantCodeCompletionResponse(response.getMessage(), new Output(output));
-    }
-
-    private Codemakerai.CompletionRequest createCompletionRequest(CompletionRequest request) {
-        final Codemakerai.Input input = createInput(request.getInput());
-
-        return Codemakerai.CompletionRequest.newBuilder()
-                .setLanguage(mapLanguage(request.getLanguage()))
-                .setInput(input)
-                .setOptions(createCompletionOptions(request.getOptions()))
-                .build();
-    }
-
-    private Codemakerai.CompletionResponse doCompletion(Codemakerai.CompletionRequest request) {
-        try {
-            return client.completion(request);
-        } catch (StatusRuntimeException e) {
-            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
-            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
-                throw new UnauthorizedException("Unauthorized request.");
-            }
-            throw e;
-        }
-    }
-
-    private CompletionResponse createCompletionResponse(Codemakerai.CompletionResponse response) {
-        final Codemakerai.Source content = response.getOutput().getSource();
-        final String output = decodeOutput(content);
-
-        return new CompletionResponse(new Output(output));
-    }
-
-    private Codemakerai.ProcessRequest createProcessRequest(ProcessRequest request) {
-        final Codemakerai.Input input = createInput(request.getInput());
-
-        return Codemakerai.ProcessRequest.newBuilder()
-                .setMode(mapMode(request.getMode()))
-                .setLanguage(mapLanguage(request.getLanguage()))
-                .setInput(input)
-                .setOptions(createProcessOptions(request.getOptions()))
-                .build();
-    }
-
-    private Codemakerai.ProcessResponse doProcess(Codemakerai.ProcessRequest request) {
-        try {
-            return client.process(request);
-        } catch (StatusRuntimeException e) {
-            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
-            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
-                throw new UnauthorizedException("Unauthorized request.");
-            }
-            throw e;
-        }
-    }
-
-    private ProcessResponse createProcessResponse(Codemakerai.ProcessResponse response) {
-        final Codemakerai.Source content = response.getOutput().getSource();
-        final String output = decodeOutput(content);
-
-        return new ProcessResponse(new Output(output));
-    }
-
-    private Codemakerai.PredictRequest createPredictRequest(PredictRequest request) {
-        final Codemakerai.Input input = createInput(request.getInput());
-
-        return Codemakerai.PredictRequest.newBuilder()
-                .setLanguage(mapLanguage(request.getLanguage()))
-                .setInput(input)
-                .build();
-    }
-
-    private Codemakerai.PredictResponse doPredict(Codemakerai.PredictRequest request) {
-        try {
-            return client.predict(request);
-        } catch (StatusRuntimeException e) {
-            logger.error("Error calling service {} {}", e.getStatus().getCode(), e.getStatus().getDescription(), e);
-            if (e.getStatus().getCode() == Status.Code.PERMISSION_DENIED) {
-                throw new UnauthorizedException("Unauthorized request.");
-            }
-            throw e;
-        }
-    }
-
-    private PredictResponse createPredictResponse(Codemakerai.PredictResponse response) {
-        return new PredictResponse();
-    }
-
-    private Codemakerai.Input createInput(Input request) {
-        return Codemakerai.Input.newBuilder()
-                .setSource(encodeInput(request))
-                .build();
-    }
-
-    private String decodeOutput(Codemakerai.Source source) {
-        final ByteString content = source.getContent();
-        ByteBuffer output = ByteBuffer.allocate(content.size());
-        content.copyTo(output);
-        output.flip();
-
-        if (source.getEncoding() == Codemakerai.Encoding.GZIP) {
-            output = decompress(output);
-        }
-
-        return DEFAULT_CHARSET.decode(output).toString();
-    }
-
-    private Codemakerai.Source.Builder encodeInput(Input input) {
-        Codemakerai.Encoding encoding = Codemakerai.Encoding.NONE;
-        ByteBuffer content = DEFAULT_CHARSET.encode(input.getSource());
-        final String checksum = checksum(content);
-
-        if (config.isEnableCompression() &&
-                content.remaining() >= config.getMinimumCompressionPayloadSize()) {
-            encoding = Codemakerai.Encoding.GZIP;
-            content = compress(content);
-        }
-
-        return Codemakerai.Source.newBuilder()
-                .setContent(ByteString.copyFrom(content))
-                .setEncoding(encoding)
-                .setChecksum(checksum);
-    }
-
-    private RequiredContext mapRequiredContext(Codemakerai.RequiredSourceContext requiredContext) {
-        return new RequiredContext(requiredContext.getPath());
     }
 }
