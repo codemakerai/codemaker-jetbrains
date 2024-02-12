@@ -5,6 +5,7 @@ package ai.codemaker.sdkv2.client.model;
 
 public enum Language {
     C,
+    CPP,
     JAVASCRIPT,
     TYPESCRIPT,
     JAVA,

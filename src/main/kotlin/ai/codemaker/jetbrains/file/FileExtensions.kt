@@ -10,6 +10,7 @@ class FileExtensions {
     companion object {
         private val languageByExtension = hashMapOf(
                 "c" to Language.C,
+                "cpp" to Language.CPP,
                 "js" to Language.JAVASCRIPT,
                 "jsx" to Language.JAVASCRIPT,
                 "ts" to Language.TYPESCRIPT,

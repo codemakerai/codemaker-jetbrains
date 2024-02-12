@@ -476,6 +476,7 @@ public final class DefaultClient implements Client {
     private static Codemakerai.Language mapLanguage(Language language) {
         return switch (language) {
             case C -> Codemakerai.Language.C;
+            case CPP -> Codemakerai.Language.CPP;
             case JAVASCRIPT -> Codemakerai.Language.JAVASCRIPT;
             case JAVA -> Codemakerai.Language.JAVA;
             case CSHARP -> Codemakerai.Language.CSHARP;
