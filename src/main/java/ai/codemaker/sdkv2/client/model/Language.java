@@ -11,5 +11,6 @@ public enum Language {
     JAVA,
     KOTLIN,
     CSHARP,
-    GO
+    GO,
+    PHP
 }

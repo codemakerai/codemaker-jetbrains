@@ -19,6 +19,7 @@ class FileExtensions {
                 "kt" to Language.KOTLIN,
                 "cs" to Language.CSHARP,
                 "go" to Language.GO,
+                "php" to Language.PHP,
         )
 
         fun isSupported(extension: String?): Boolean {

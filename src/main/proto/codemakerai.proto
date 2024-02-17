@@ -25,6 +25,7 @@ enum Language {
   C = 1;
   CPP = 3;
   JAVA = 7;
+  PHP = 8;
   JAVASCRIPT = 9;
   CSHARP = 13;
   GO = 18;

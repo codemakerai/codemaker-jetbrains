@@ -478,11 +478,12 @@ public final class DefaultClient implements Client {
             case C -> Codemakerai.Language.C;
             case CPP -> Codemakerai.Language.CPP;
             case JAVASCRIPT -> Codemakerai.Language.JAVASCRIPT;
+            case TYPESCRIPT -> Codemakerai.Language.TYPESCRIPT;
             case JAVA -> Codemakerai.Language.JAVA;
+            case KOTLIN -> Codemakerai.Language.KOTLIN;
             case CSHARP -> Codemakerai.Language.CSHARP;
             case GO -> Codemakerai.Language.GO;
-            case KOTLIN -> Codemakerai.Language.KOTLIN;
-            case TYPESCRIPT -> Codemakerai.Language.TYPESCRIPT;
+            case PHP -> Codemakerai.Language.PHP;
         };
     }
 
