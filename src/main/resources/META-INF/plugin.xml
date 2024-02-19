@@ -31,12 +31,16 @@
         <h3>Supported languages</h3>
         <p>Following programming languages are supported:</p>
         <uL>
+            <li>C</li>
+            <li>C++</li>
+            <li>Java</li>
+            <li>Go</li>
             <li>JavaScript & JSX</li>
             <li>TypeScript & TSX</li>
-            <li>Java</li>
-            <li>Kotlin</li>
+            <li>PHP</li>
             <li>C#</li>
-            <li>Go</li>
+            <li>Rust</li>
+            <li>Kotlin</li>
         </ul>
 
         <h3>Getting started</h3>
