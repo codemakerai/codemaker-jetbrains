@@ -13,13 +13,14 @@ class FileExtensions {
                 "cpp" to Language.CPP,
                 "js" to Language.JAVASCRIPT,
                 "jsx" to Language.JAVASCRIPT,
-                "ts" to Language.TYPESCRIPT,
-                "tsx" to Language.TYPESCRIPT,
+                "php" to Language.PHP,
                 "java" to Language.JAVA,
-                "kt" to Language.KOTLIN,
                 "cs" to Language.CSHARP,
                 "go" to Language.GO,
-                "php" to Language.PHP,
+                "kt" to Language.KOTLIN,
+                "ts" to Language.TYPESCRIPT,
+                "tsx" to Language.TYPESCRIPT,
+                "rs" to Language.RUST,
         )
 
         fun isSupported(extension: String?): Boolean {

@@ -7,10 +7,11 @@ public enum Language {
     C,
     CPP,
     JAVASCRIPT,
-    TYPESCRIPT,
+    PHP,
     JAVA,
-    KOTLIN,
     CSHARP,
     GO,
-    PHP
+    KOTLIN,
+    TYPESCRIPT,
+    RUST
 }
