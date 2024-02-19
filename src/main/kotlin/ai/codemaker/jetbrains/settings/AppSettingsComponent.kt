@@ -3,13 +3,10 @@
  */
 package ai.codemaker.jetbrains.settings
 
+import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBComboBoxLabel
-import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBTextField
+import com.intellij.ui.components.*
 import com.intellij.util.ui.FormBuilder
-import javax.swing.JComboBox
 import javax.swing.JPanel
 
 class AppSettingsComponent {
@@ -25,7 +22,14 @@ class AppSettingsComponent {
     private val syntaxAutocorrectionEnabledCheck = JBCheckBox()
 
     init {
+        val createAccountLabel = ActionLink("Create account for free.") {
+            BrowserUtil.browse("https://portal.codemaker.ai/#/register");
+        }
+        createAccountLabel.setExternalLinkIcon()
+
         panel = FormBuilder.createFormBuilder()
+                .addComponent(createAccountLabel)
+                .addSeparator()
                 .addLabeledComponent(JBLabel("API Key: "), apiKeyText, 1, false)
                 .addSeparator()
                 .addLabeledComponent(JBLabel("Enable autocompletion: "), autocompletionEnabledCheck, 1, false)
