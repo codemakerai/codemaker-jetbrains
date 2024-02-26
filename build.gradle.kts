@@ -25,7 +25,6 @@ dependencies {
 
     implementation("com.google.protobuf:protobuf-java-util:3.24.0")
     implementation("com.google.protobuf:protobuf-java:3.24.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
     runtimeOnly("io.grpc:grpc-netty-shaded:1.59.0")
 
