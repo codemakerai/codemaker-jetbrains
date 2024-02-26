@@ -16,6 +16,9 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     var apiKey: String? = null
 
     @JvmField
+    var model: String? = null
+
+    @JvmField
     var codeActionsEnabled: Boolean = true
 
     @JvmField

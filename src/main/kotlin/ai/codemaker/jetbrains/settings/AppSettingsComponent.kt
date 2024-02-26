@@ -12,6 +12,7 @@ import javax.swing.JPanel
 class AppSettingsComponent {
     val panel: JPanel
     private val apiKeyText = JBTextField()
+    private val modelCombo = ComboBox(arrayOf("default"))
     private val codeActionsEnabledCheck = JBCheckBox()
     private val autocompletionEnabledCheck = JBCheckBox()
     private val multilineAutocompletionEnabledCheck = JBCheckBox()
@@ -31,6 +32,7 @@ class AppSettingsComponent {
                 .addComponent(createAccountLabel)
                 .addSeparator()
                 .addLabeledComponent(JBLabel("API Key: "), apiKeyText, 1, false)
+                .addLabeledComponent(JBLabel("Model: "), modelCombo, 1, false)
                 .addSeparator()
                 .addLabeledComponent(JBLabel("Enable autocompletion: "), autocompletionEnabledCheck, 1, false)
                 .addLabeledComponent(JBLabel("Enable multiline autocompletion: "), multilineAutocompletionEnabledCheck, 1, false)
@@ -52,6 +54,12 @@ class AppSettingsComponent {
         get() = apiKeyText.text.trim()
         set(apiKey) {
             apiKeyText.text = apiKey
+        }
+
+    var model: String?
+        get() = modelCombo.item
+        set(item) {
+            modelCombo.item = item ?: "default"
         }
 
     var codeActionsEnabled: Boolean

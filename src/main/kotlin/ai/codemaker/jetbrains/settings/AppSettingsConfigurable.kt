@@ -39,6 +39,7 @@ class AppSettingsConfigurable : Configurable {
     override fun apply() {
         val settings = AppSettingsState.instance
         settings.apiKey = settingsComponent!!.apiKey
+        settings.model = settingsComponent!!.model
         settings.codeActionsEnabled = settingsComponent!!.codeActionsEnabled
         settings.autocompletionEnabled = settingsComponent!!.autocompletionEnabled
         settings.multilineAutocompletionEnabled = settingsComponent!!.multilineAutocompletionEnabled
@@ -52,6 +53,7 @@ class AppSettingsConfigurable : Configurable {
     override fun reset() {
         val settings = AppSettingsState.instance
         settingsComponent!!.apiKey = settings.apiKey
+        settingsComponent!!.model = settings.model
         settingsComponent!!.codeActionsEnabled = settings.codeActionsEnabled
         settingsComponent!!.autocompletionEnabled = settings.autocompletionEnabled
         settingsComponent!!.multilineAutocompletionEnabled = settings.multilineAutocompletionEnabled
