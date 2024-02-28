@@ -1,8 +1,8 @@
-# CodeMaker InteliJ Plugin
+# CodeMaker IntelliJ Plugin
 
 ## Overview
 
-CodeMaker AI Visual Studio Code extension. Offers all the CodeMaker AI features directly in the IDE.
+CodeMaker AI Jetbrains IntelliJ extension. Offers all the CodeMaker AI features directly in the IDE.
 
 ## Features
 
