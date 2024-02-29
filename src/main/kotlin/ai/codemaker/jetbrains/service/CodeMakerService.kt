@@ -212,8 +212,8 @@ class CodeMakerService(private val project: Project) {
     }
 
     @Throws(InterruptedException::class)
-    private fun process(client: Client, mode: Mode, language: Language, source: String, modify: Modify, codePath: String?, prompt: String?, contextId: String?): String {
-        val response = client.process(createProcessRequest(mode, language, source, modify, codePath, prompt, contextId))
+    private fun process(client: Client, mode: Mode, language: Language, source: String, modify: Modify, codePath: String?, prompt: String?, contextId: String?, model: String?): String {
+        val response = client.process(createProcessRequest(mode, language, source, modify, codePath, prompt, contextId, model))
         return response.output.source
     }
 
@@ -254,12 +254,14 @@ class CodeMakerService(private val project: Project) {
 
     private fun processFile(client: Client, file: VirtualFile, mode: Mode, modify: Modify, codePath: String? = null, prompt: String? = null) {
         try {
+            val model = AppSettingsState.instance.model
+
             val source = readFile(file) ?: return
             val language = FileExtensions.languageFromExtension(file.extension)
 
             val contextId = registerContext(client, mode, language!!, source, file.path)
 
-            val output = process(client, mode, language!!, source, modify, codePath, prompt, contextId)
+            val output = process(client, mode, language!!, source, modify, codePath, prompt, contextId, model)
 
             writeFile(file, output)
         } catch (e: ProcessCanceledException) {
@@ -274,6 +276,8 @@ class CodeMakerService(private val project: Project) {
 
     private fun processSourceGraphFile(client: Client, file: VirtualFile, mode: Mode, depth: Int = 0) {
         try {
+            val model = AppSettingsState.instance.model
+
             val language = FileExtensions.languageFromExtension(file.extension)
             val source = readFile(file) ?: return
 
@@ -289,7 +293,7 @@ class CodeMakerService(private val project: Project) {
             }
 
             val contextId = registerContext(client, mode, language!!, source, file.path)
-            val output = process(client, mode, language!!, source, Modify.NONE, null, null, contextId)
+            val output = process(client, mode, language!!, source, Modify.NONE, null, null, contextId, model)
             writeFile(file, output)
         } catch (e: ProcessCanceledException) {
             throw e
@@ -403,12 +407,12 @@ class CodeMakerService(private val project: Project) {
         }
     }
 
-    private fun createProcessRequest(mode: Mode, language: Language, source: String, modify: Modify, codePath: String? = null, prompt: String? = null, contextId: String? = null): ProcessRequest {
+    private fun createProcessRequest(mode: Mode, language: Language, source: String, modify: Modify, codePath: String? = null, prompt: String? = null, contextId: String? = null, model: String ? = null): ProcessRequest {
         return ProcessRequest(
                 mode,
                 language,
                 Input(source),
-                Options(modify, codePath, prompt, true, false, contextId)
+                Options(modify, codePath, prompt, true, false, contextId, model)
         )
     }
 
@@ -416,7 +420,7 @@ class CodeMakerService(private val project: Project) {
         return PredictRequest(
                 language,
                 Input(source),
-                Options(null, null, null, false, false, contextId)
+                Options(null, null, null, false, false, contextId, null)
         )
     }
 
@@ -424,7 +428,7 @@ class CodeMakerService(private val project: Project) {
         return CompletionRequest(
                 language,
                 Input(source),
-                Options(null, "@$offset", null, false, isMultilineAutocompletion, contextId)
+                Options(null, "@$offset", null, false, isMultilineAutocompletion, contextId, null)
         )
     }
 
@@ -437,7 +441,7 @@ class CodeMakerService(private val project: Project) {
                 message,
                 language,
                 Input(source),
-                Options(null, null, null, false, false, contextId)
+                Options(null, null, null, false, false, contextId, null)
         )
     }
 

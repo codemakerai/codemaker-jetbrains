@@ -85,6 +85,7 @@ message ProcessOptions {
   string prompt = 3;
   bool detectSyntaxErrors = 4;
   string contextId = 5;
+  string model = 6;
 }
 
 message CompletionOptions {

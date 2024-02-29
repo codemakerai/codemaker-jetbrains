@@ -17,13 +17,16 @@ public class Options {
 
     private final String contextId;
 
-    public Options(Modify modify, String codePath, String prompt, boolean detectSyntaxErrors, boolean allowMultiLineAutocomplete, String contextId) {
+    private final String model;
+
+    public Options(Modify modify, String codePath, String prompt, boolean detectSyntaxErrors, boolean allowMultiLineAutocomplete, String contextId, String model) {
         this.modify = modify;
         this.codePath = codePath;
         this.prompt = prompt;
         this.detectSyntaxErrors = detectSyntaxErrors;
         this.allowMultiLineAutocomplete = allowMultiLineAutocomplete;
         this.contextId = contextId;
+        this.model = model;
     }
 
     public Modify getModify() {
@@ -48,5 +51,9 @@ public class Options {
 
     public String getContextId() {
         return contextId;
+    }
+
+    public String getModel() {
+        return model;
     }
 }
