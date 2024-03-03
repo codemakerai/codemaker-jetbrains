@@ -403,11 +403,13 @@ public final class DefaultClient implements Client {
         final Optional<String> codePath = Optional.ofNullable(options.getCodePath());
         final Optional<String> prompt = Optional.ofNullable(options.getPrompt());
         final Optional<String> contextId = Optional.ofNullable(options.getContextId());
+        final Optional<String> model = Optional.ofNullable(options.getModel());
 
         modify.ifPresent(value -> builder.setModify(mapModify(value)));
         codePath.ifPresent(builder::setCodePath);
         prompt.ifPresent(builder::setPrompt);
         contextId.ifPresent(builder::setContextId);
+        model.ifPresent(builder::setModel);
 
         builder.setDetectSyntaxErrors(options.isDetectSyntaxErrors());
 

@@ -26,6 +26,7 @@ class AppSettingsConfigurable : Configurable {
     override fun isModified(): Boolean {
         val settings = AppSettingsState.instance
         return settingsComponent!!.apiKey != settings.apiKey
+                || settingsComponent!!.model != settings.model
                 || settingsComponent!!.codeActionsEnabled != settings.codeActionsEnabled
                 || settingsComponent!!.autocompletionEnabled != settings.autocompletionEnabled
                 || settingsComponent!!.multilineAutocompletionEnabled != settings.multilineAutocompletionEnabled
