@@ -10,9 +10,11 @@ import com.intellij.util.ui.FormBuilder
 import javax.swing.JPanel
 
 class AppSettingsComponent {
+    private val defaultModel = "default"
+
     val panel: JPanel
     private val apiKeyText = JBTextField()
-    private val modelCombo = ComboBox(arrayOf("default"))
+    private val modelCombo = ComboBox(arrayOf(defaultModel))
     private val codeActionsEnabledCheck = JBCheckBox()
     private val autocompletionEnabledCheck = JBCheckBox()
     private val multilineAutocompletionEnabledCheck = JBCheckBox()
@@ -57,9 +59,14 @@ class AppSettingsComponent {
         }
 
     var model: String?
-        get() = modelCombo.item
+        get() {
+            if (defaultModel == modelCombo.item) {
+                return null
+            }
+            return modelCombo.item
+        }
         set(item) {
-            modelCombo.item = item ?: "default"
+            modelCombo.item = item ?: defaultModel
         }
 
     var codeActionsEnabled: Boolean
