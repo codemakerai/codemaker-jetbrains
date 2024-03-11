@@ -26,11 +26,13 @@ class CodemakerEditorFactoryListener : EditorFactoryListener {
     private val editors = Collections.newSetFromMap(IdentityHashMap<Editor, Boolean>())
 
     override fun editorCreated(event: EditorFactoryEvent) {
-        event.editor.apply {
-            document.addDocumentListener(codemakerDocumentListener)
-            caretModel.addCaretListener(codemakerCaretListener)
+        if (!editors.contains(event.editor)) {
+            event.editor.apply {
+                document.addDocumentListener(codemakerDocumentListener)
+                caretModel.addCaretListener(codemakerCaretListener)
+            }
+            editors.add(event.editor)
         }
-        editors.add(event.editor)
     }
 
     override fun editorReleased(event: EditorFactoryEvent) {
