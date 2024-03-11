@@ -37,7 +37,7 @@ class StartupActivity : ProjectActivity {
             notification.icon = Icons.Logo
             notification.addAction(object : AnAction("Configure") {
                 override fun actionPerformed(e: AnActionEvent) {
-                    ShowSettingsUtil.getInstance().showSettingsDialog(project, AppSettingsConfigurable::class.java);
+                    ShowSettingsUtil.getInstance().showSettingsDialog(project, AppSettingsConfigurable::class.java)
                 }
             })
             notification.notify(project)

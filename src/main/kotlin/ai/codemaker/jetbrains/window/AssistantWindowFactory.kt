@@ -49,7 +49,7 @@ import javax.swing.JTextField
 class AssistantWindowFactory : ToolWindowFactory, DumbAware {
 
     object AssistantWindowFactory {
-        val ASSISTANT_VIEW = "/webview/assistant.html"
+        const val ASSISTANT_VIEW = "/webview/assistant.html"
     }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
@@ -119,24 +119,28 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
                 if (AppSettingsState.instance.apiKey.isNullOrEmpty()) {
                     addMessage(
                             "To use Assistant features, please first set the API Key in the Extension Settings." +
-                                    "\nYou can create free an account [here](https://portal.codemaker.ai/#/register).", Role.Assistant)
+                                    "\nYou can create free account [here](https://portal.codemaker.ai/#/register).", Role.Assistant)
                     return
                 }
 
                 ApplicationManager.getApplication().executeOnPooledThread {
-                    val service: CodeMakerService = project.getService(CodeMakerService::class.java)
+                    try {
+                        val service: CodeMakerService = project.getService(CodeMakerService::class.java)
 
-                    val fileEditorManager = FileEditorManager.getInstance(project)
-                    val file = fileEditorManager.getSelectedEditor()?.file
+                        val fileEditorManager = FileEditorManager.getInstance(project)
+                        val file = fileEditorManager.getSelectedEditor()?.file
 
-                    val isAssistantActionsEnabled = AppSettingsState.instance.assistantActionsEnabled
+                        val isAssistantActionsEnabled = AppSettingsState.instance.assistantActionsEnabled
 
-                    if (isAssistantActionsEnabled && file != null && FileExtensions.isSupported(file.extension)) {
-                        val output = service.assistantCodeCompletion(input, file)
-                        addMessage(output, Role.Assistant)
-                    } else {
-                        val output = service.assistantCompletion(input)
-                        addMessage(output, Role.Assistant)
+                        if (isAssistantActionsEnabled && file != null && FileExtensions.isSupported(file.extension)) {
+                            val output = service.assistantCodeCompletion(input, file)
+                            addMessage(output, Role.Assistant)
+                        } else {
+                            val output = service.assistantCompletion(input)
+                            addMessage(output, Role.Assistant)
+                        }
+                    } catch (e: Exception) {
+                        addMessage("Assistant could not complete this request. Please try again.", Role.Assistant)
                     }
                 }
             }
