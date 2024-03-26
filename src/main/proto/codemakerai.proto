@@ -92,10 +92,13 @@ message CompletionOptions {
   string codePath = 1;
   bool allowMultiLineAutocomplete = 2;
   repeated CodeSnippetContext codeSnippetContexts = 3;
+  string contextId = 4;
+  string model = 5;
 }
 
 message AssistantCodeCompletionOptions {
   string contextId = 1;
+  string model = 2;
 }
 
 message PredictionOptions {

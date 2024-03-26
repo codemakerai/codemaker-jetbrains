@@ -76,12 +76,14 @@ class CodeMakerService(private val project: Project) {
 
     fun assistantCodeCompletion(message: String, path: VirtualFile?): String {
         try {
+            val model = AppSettingsState.instance.model
+
             val source = readFile(path!!) ?: return ""
             val language = FileExtensions.languageFromExtension(path.extension)
 
             val contextId = registerContext(client, language!!, source, path.path)
 
-            val response = client.assistantCodeCompletion(createAssistantCodeCompletionRequest(message, language!!, source, contextId))
+            val response = client.assistantCodeCompletion(createAssistantCodeCompletionRequest(message, language!!, source, contextId, model))
 
             if (response.output.source.isNotEmpty()) {
                 writeFile(path, response.output.source)
@@ -101,12 +103,14 @@ class CodeMakerService(private val project: Project) {
 
     fun completion(path: VirtualFile, offset: Int, isMultilineAutocompletion: Boolean): String {
         try {
+            val model = AppSettingsState.instance.model
+
             val source = readFile(path) ?: return ""
             val language = FileExtensions.languageFromExtension(path.extension)
 
             val contextId = registerContext(client, language!!, source, path.path)
 
-            val response = client.completion(createCompletionRequest(language!!, source, offset, isMultilineAutocompletion, contextId))
+            val response = client.completion(createCompletionRequest(language!!, source, offset, isMultilineAutocompletion, contextId, model))
 
             return response.output.source;
         } catch (e: ProcessCanceledException) {
@@ -424,11 +428,11 @@ class CodeMakerService(private val project: Project) {
         )
     }
 
-    private fun createCompletionRequest(language: Language, source: String, offset: Int, isMultilineAutocompletion: Boolean, contextId: String?): CompletionRequest {
+    private fun createCompletionRequest(language: Language, source: String, offset: Int, isMultilineAutocompletion: Boolean, contextId: String?, model: String?): CompletionRequest {
         return CompletionRequest(
                 language,
                 Input(source),
-                Options(null, "@$offset", null, false, isMultilineAutocompletion, contextId, null)
+                Options(null, "@$offset", null, false, isMultilineAutocompletion, contextId, model)
         )
     }
 
@@ -436,12 +440,12 @@ class CodeMakerService(private val project: Project) {
         return AssistantCompletionRequest(message)
     }
 
-    private fun createAssistantCodeCompletionRequest(message: String, language: Language, source: String, contextId: String?): AssistantCodeCompletionRequest {
+    private fun createAssistantCodeCompletionRequest(message: String, language: Language, source: String, contextId: String?, model: String?): AssistantCodeCompletionRequest {
         return AssistantCodeCompletionRequest(
                 message,
                 language,
                 Input(source),
-                Options(null, null, null, false, false, contextId, null)
+                Options(null, null, null, false, false, contextId, model)
         )
     }
 

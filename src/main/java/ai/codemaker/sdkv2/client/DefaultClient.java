@@ -417,20 +417,29 @@ public final class DefaultClient implements Client {
     }
 
     private static Codemakerai.CompletionOptions createCompletionOptions(Options options) {
-        // TODO map remaining attributes
-        return Codemakerai.CompletionOptions
-                .newBuilder()
-                .setCodePath(options.getCodePath())
-                .setAllowMultiLineAutocomplete(options.isAllowMultiLineAutocomplete())
-                .build();
+        final Codemakerai.CompletionOptions.Builder builder = Codemakerai.CompletionOptions.newBuilder();
+
+        final Optional<String> codePath = Optional.ofNullable(options.getCodePath());
+        final Optional<String> contextId = Optional.ofNullable(options.getContextId());
+        final Optional<String> model = Optional.ofNullable(options.getModel());
+
+        codePath.ifPresent(builder::setCodePath);
+        contextId.ifPresent(builder::setContextId);
+        model.ifPresent(builder::setModel);
+
+        builder.setAllowMultiLineAutocomplete(options.isAllowMultiLineAutocomplete());
+
+        return builder.build();
     }
 
     private Codemakerai.AssistantCodeCompletionOptions createAssistantCodeCompletionOptions(Options options) {
         final Codemakerai.AssistantCodeCompletionOptions.Builder builder = Codemakerai.AssistantCodeCompletionOptions.newBuilder();
 
         final Optional<String> contextId = Optional.ofNullable(options.getContextId());
+        final Optional<String> model = Optional.ofNullable(options.getModel());
 
         contextId.ifPresent(builder::setContextId);
+        model.ifPresent(builder::setModel);
 
         return builder.build();
     }
