@@ -46,6 +46,41 @@
             text-align: left;
             white-space: pre-wrap;
         }
+
+        .loader {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            width: 60px;
+            margin: 10px auto;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background-color: #e7e7d2;
+            border-radius: 50%;
+            animation: shine 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes shine {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -57,22 +92,51 @@
     </div>
 </div>
 <script>
-    window.append = function (body, assistant) {
-        let card = document.createElement("div");
+    window.appendMessage = function (body, assistant) {
+        const card = document.createElement("div");
         card.classList.add("card", assistant ? "assistant" : "user");
 
-        let label = document.createElement("div");
+        const label = document.createElement("div");
         label.innerText = (assistant ? "Assistant" : "User");
         label.classList.add("label");
         card.appendChild(label)
 
-        let message = document.createElement("div");
+        const message = document.createElement("div");
         message.classList.add("message");
         message.innerHTML = body;
         card.appendChild(message);
 
         document.getElementById("chat").appendChild(card);
         document.getElementById("anchor").scrollIntoView({behavior: "smooth"});
+    }
+
+    window.showPendingMessage = function() {
+        const card = document.createElement("div");
+        card.classList.add("card", "pending");
+
+        const label = document.createElement("div");
+        label.innerText = ("Assistant");
+        label.classList.add("label");
+        card.appendChild(label)
+
+        const message = document.createElement("div");
+        message.classList.add("message");
+        message.innerHTML = `<div class="loader">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>`;
+        card.appendChild(message);
+
+        document.getElementById("chat").appendChild(card);
+        document.getElementById("anchor").scrollIntoView({behavior: "smooth"});
+    }
+
+    window.hidePendingMessage = function() {
+        const pendingMessage = document.querySelector('.card.pending');
+        if (pendingMessage) {
+            pendingMessage.remove();
+        }
     }
 </script>
 </body>

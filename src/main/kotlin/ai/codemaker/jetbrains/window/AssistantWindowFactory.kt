@@ -99,7 +99,16 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
             // TODO cap message size
             val message = Message(UUID.randomUUID().toString(), input, role, Date())
             messages.add(message)
+            hidePendingMessage()
             appendMessage(message)
+        }
+
+        private fun showPendingMessage() {
+            chatScreen.cefBrowser.executeJavaScript("window.showPendingMessage()", "", 0)
+        }
+
+        private fun hidePendingMessage() {
+            chatScreen.cefBrowser.executeJavaScript("window.hidePendingMessage()", "", 0)
         }
 
         private fun sendMessage() {
@@ -115,6 +124,8 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
                                     "\nYou can create free account [here](https://portal.codemaker.ai/#/register).", Role.Assistant)
                     return
                 }
+
+                showPendingMessage()
 
                 ApplicationManager.getApplication().executeOnPooledThread {
                     try {
@@ -142,7 +153,7 @@ class AssistantWindowFactory : ToolWindowFactory, DumbAware {
         private fun appendMessage(message: Message) {
             val content = renderMarkdown(message.content).replace("\n", "\\n").replace("\"", "\\\"")
             val assistant = (message.role == Role.Assistant).toString()
-            chatScreen.cefBrowser.executeJavaScript("window.append(\"$content\", ${assistant})", "", 0)
+            chatScreen.cefBrowser.executeJavaScript("window.appendMessage(\"$content\", ${assistant})", "", 0)
         }
 
         private fun assistantView(): String {
