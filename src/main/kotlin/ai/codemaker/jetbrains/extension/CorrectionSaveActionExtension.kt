@@ -16,7 +16,7 @@ class CorrectionSaveActionExtension : ActionOnSave() {
         return project.getService(Corrector::class.java) != null
     }
 
-    override fun processDocuments(project: Project, documents: Array<out Document>) {
+    override fun processDocuments(project: Project, documents: Array<Document>) {
         try {
             val corrector = project.getService(Corrector::class.java)
             val documentManager = PsiDocumentManager.getInstance(project)

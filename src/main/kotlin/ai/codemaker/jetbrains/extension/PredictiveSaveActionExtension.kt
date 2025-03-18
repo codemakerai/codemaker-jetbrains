@@ -16,7 +16,7 @@ class PredictiveSaveActionExtension : ActionOnSave() {
         return project.getService(Predictor::class.java) != null
     }
 
-    override fun processDocuments(project: Project, documents: Array<out Document>) {
+    override fun processDocuments(project: Project, documents: Array<Document>) {
         try {
             val predictor = project.getService(Predictor::class.java)
             val documentManager = PsiDocumentManager.getInstance(project)
