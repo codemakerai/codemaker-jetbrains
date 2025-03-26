@@ -22,7 +22,7 @@ abstract class BaseAssistantCodeVisionProvider(suffix: String, private val hint:
     override val name = "CodeMaker AI Assistant $hint"
 
     override fun acceptsFile(file: PsiFile): Boolean {
-        return AppSettingsState.instance.assistantCodeVisionEnabled && FileExtensions.isSupported(file.virtualFile.extension)
+        return AppSettingsState.instance.assistantCodeVisionEnabled && FileExtensions.isSupported(file.virtualFile?.extension)
     }
 
     override fun acceptsElement(element: PsiElement): Boolean {
